@@ -5,7 +5,16 @@
  * 固定單一配色（無日間／夜間切換）
  */
 import '../styles/global.css';
+import CategoryPieMenu from '../components/CategoryPieMenu.svelte';
 import { categories } from '../lib/categories';
+
+/** 圓餅選單用的精簡分類（短標方便圓鈕顯示） */
+const pieItems = categories.map((c) => ({
+  id: c.id,
+  title: c.title,
+  href: c.href,
+  short: c.id === 'ai' ? 'AI' : c.id === 'electrical' ? '電' : '網',
+}));
 
 interface Props {
   title: string;
@@ -130,5 +139,8 @@ const extraNav = [
     >
       <p class="site-footer-inner">{siteName}</p>
     </footer>
+
+    {/* 右下角固定：三大分類圓餅選單（Svelte） */}
+    <CategoryPieMenu client:load items={pieItems} />
   </body>
 </html>

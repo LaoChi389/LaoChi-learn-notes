@@ -1,25 +1,17 @@
 ---
 /**
- * 首頁：Bento 風格 + Toon 筆記卡
- * 結構：Hero → 三大分類 → 最新筆記（最多 20）
+ * 首頁：Hero + 最新筆記
+ * 三大分類改由右下／可拖動圓餅選單進入（見 CategoryPieMenu）
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import NotePreviewCard from '../components/NotePreviewCard.svelte';
-import { categories, getCategory } from '../lib/categories';
-import { formatDate, getAllNotes, getNotes, noteHref } from '../lib/notes';
+import { getCategory } from '../lib/categories';
+import { formatDate, getAllNotes, noteHref } from '../lib/notes';
 
 const LATEST_LIMIT = 20;
 
 const allNotes = await getAllNotes();
 const latestNotes = allNotes.slice(0, LATEST_LIMIT);
-
-const counts: Record<string, number> = {};
-for (const cat of categories) {
-  counts[cat.id] = (await getNotes(cat.id)).length;
-}
-
-/** 分類卡點綴色（循環使用，仍屬同色系） */
-const catAccents = ['var(--accent)', 'var(--tone-2-3)', 'var(--tone-2-5)'];
 ---
 
 <BaseLayout title="首頁" wide>
@@ -36,33 +28,10 @@ const catAccents = ['var(--accent)', 'var(--tone-2-3)', 'var(--tone-2-5)'];
         <a href="/search" class="toon-btn toon-btn--ghost">搜尋</a>
         <a href="/tags" class="toon-btn toon-btn--ghost">標籤</a>
       </div>
+      <p class="bento-hero-hint">
+        將滑鼠移到「分類」圓餅上即可展開三大分類；也可拖到喜歡的位置。
+      </p>
     </header>
-
-    {/* ===== 三大分類（Bento 區塊） ===== */}
-    <section class="bento-cats" aria-label="筆記分類">
-      <div class="bento-section-head">
-        <h2 class="bento-section-title">三大分類</h2>
-        <p class="bento-section-desc">點進去看完整列表</p>
-      </div>
-      <ul class="bento-cat-grid" role="list">
-        {
-          categories.map((cat, i) => (
-            <li>
-              <a
-                href={cat.href}
-                class="toon-card bento-cat-card"
-                style={`--cat-accent: ${catAccents[i % catAccents.length]}`}
-              >
-                <span class="bento-cat-count tabular-nums">{counts[cat.id] ?? 0}</span>
-                <h3 class="bento-cat-title">{cat.title}</h3>
-                <p class="bento-cat-desc">{cat.description}</p>
-                <span class="bento-cat-go">進入 →</span>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </section>
 
     {/* ===== 最新筆記 ===== */}
     <section class="bento-notes" aria-labelledby="latest-heading">

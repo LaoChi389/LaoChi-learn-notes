@@ -517,6 +517,10 @@
     @apply mt-5 flex flex-wrap items-center gap-2.5;
   }
 
+  .bento-hero-hint {
+    @apply mt-4 text-xs leading-relaxed text-muted-foreground;
+  }
+
   .bento-section-head {
     @apply mb-4 flex flex-wrap items-end justify-between gap-2;
   }
