@@ -101,9 +101,9 @@ src/lib/categories.ts
 
 | 目的 | 檔案 |
 |------|------|
-| 網站名稱、導覽、深色模式 | `src/layouts/BaseLayout.astro`（名稱：紀錄學習的老紀） |
+| 網站名稱、導覽 | `src/layouts/BaseLayout.astro`（名稱：紀錄學習的老紀） |
 | 首頁佈局與自我介紹 | `src/pages/index.astro` |
-| 全站顏色 | `src/styles/theme.css` |
+| 全站色票（Misty Lightseagreen） | `src/styles/theme.css` |
 | 版面與筆記內文排版 | `src/styles/global.css` |
 | 首頁 | `src/pages/index.astro` |
 | 分類列表頁 | `src/pages/[category]/index.astro` |
@@ -121,7 +121,7 @@ src/lib/categories.ts
 | 搜尋 | `/search` | 搜標題、說明、標籤、分類 |
 | 標籤總覽 | `/tags` | 所有標籤與篇數 |
 | 單一標籤 | `/tags/入門` | 該標籤下的筆記 |
-| 深色模式 | 右上角 🌙 / ☀️ | 偏好會記住 |
+| 配色 | 固定 Misty Lightseagreen | 見 `theme.css`，無日間／夜間切換 |
 
 ---
 

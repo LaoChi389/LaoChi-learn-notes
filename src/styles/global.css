@@ -1,15 +1,11 @@
 /**
- * 全站樣式（AstroPaper 風格）
- * - 色票：theme.css
- * - 深色模式：html[data-theme="dark"]
+ * 全站樣式
+ * 色票：theme.css（Misty Lightseagreen，固定單一主題）
  */
 @import 'tailwindcss';
 @import './theme.css';
 
-/* 與 AstroPaper 相同：用 data-theme 切換，不是 .dark class */
-@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
-
-/* 把 CSS 變數接到 Tailwind 色名，之後可用 bg-background、text-accent 等 */
+/* 語意色 → Tailwind 色名 */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -33,14 +29,54 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
+    color-scheme: light;
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply relative bg-background text-foreground font-sans antialiased;
     line-height: 1.75;
+    isolation: isolate;
   }
 
-  /* 連結：虛線底線（AstroPaper 特色） */
+  /*
+   * 低調背景：頂部柔光 + 極淡網格
+   */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(
+        ellipse 90% 55% at 50% -10%,
+        color-mix(in srgb, var(--accent) calc(var(--bg-glow-opacity) * 100%), transparent),
+        transparent 70%
+      ),
+      linear-gradient(
+        to right,
+        color-mix(in srgb, var(--foreground) calc(var(--bg-grid-opacity) * 100%), transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--foreground) calc(var(--bg-grid-opacity) * 100%), transparent) 1px,
+        transparent 1px
+      );
+    background-size:
+      100% 100%,
+      28px 28px,
+      28px 28px;
+    background-repeat: no-repeat, repeat, repeat;
+    mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 100%);
+  }
+
+  body > * {
+    position: relative;
+    z-index: 0;
+  }
+
   a {
     @apply text-foreground underline decoration-dashed underline-offset-4;
     @apply hover:text-accent;
@@ -54,35 +90,45 @@
   button:not(:disabled) {
     cursor: pointer;
   }
-
-  /* 主題圖示：依 data-theme 顯示 */
-  [data-theme='light'] .icon-sun {
-    display: none;
-  }
-  [data-theme='dark'] .icon-moon {
-    display: none;
-  }
 }
 
-/* 版面寬度（與 AstroPaper max-w-app 相同） */
 @utility app-layout {
   @apply mx-auto w-full max-w-3xl px-4;
 }
 
-/* 目前導覽：波浪底線 */
+/* 頂欄品牌 */
+.site-brand {
+  @apply flex min-w-0 items-center gap-2.5 no-underline sm:gap-3;
+  @apply transition-opacity duration-150 hover:opacity-90;
+}
+
+.site-logo {
+  @apply h-9 w-9 shrink-0 rounded-md object-cover sm:h-10 sm:w-10;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.site-brand-text {
+  @apply truncate text-base font-semibold tracking-tight text-foreground sm:text-lg;
+  transition: color 0.15s ease;
+}
+
+.site-brand:hover .site-brand-text {
+  color: var(--accent);
+}
+
+.site-brand-text.is-home {
+  color: var(--accent);
+}
+
 @utility active-nav {
   @apply underline decoration-wavy decoration-accent decoration-2 underline-offset-8;
 }
 
-/* 一般導覽連結（關閉預設實線底線） */
 @utility nav-link {
   @apply text-foreground no-underline decoration-transparent;
   @apply hover:text-accent hover:underline hover:decoration-dashed hover:underline-offset-4;
 }
 
-/*
- * 筆記正文與文章頁
- */
 @layer components {
   /* ===== 文章標題區 ===== */
   .article-header {
@@ -118,7 +164,6 @@
     @apply mt-4;
   }
 
-  /* ===== 正文 + 目錄版面 ===== */
   .article-layout {
     @apply min-w-0;
   }
@@ -129,7 +174,6 @@
 
   .article-body {
     @apply min-w-0;
-    /* 有 TOC 時正文排在左（grid 順序） */
   }
 
   .article-layout--with-toc .article-body {
@@ -140,13 +184,8 @@
     @apply mb-8 lg:order-2 lg:mb-0 lg:sticky lg:top-6;
   }
 
-  /* ===== 目錄 TOC ===== */
   .toc {
     @apply rounded-xl bg-surface px-4 py-4;
-  }
-
-  [data-theme='dark'] .toc {
-    background-color: color-mix(in srgb, var(--surface) 95%, transparent);
   }
 
   .toc-title {
@@ -170,7 +209,6 @@
     @apply transition-colors duration-150 hover:text-accent;
   }
 
-  /* ===== 返回列表 ===== */
   .article-back {
     @apply mt-10 text-sm;
   }
@@ -179,7 +217,6 @@
     @apply text-muted-foreground no-underline hover:text-accent;
   }
 
-  /* ===== 上一篇 / 下一篇 ===== */
   .article-pager {
     @apply mt-8 grid gap-3 border-t border-border pt-8 sm:grid-cols-2 sm:gap-4;
   }
@@ -214,7 +251,7 @@
     @apply hidden sm:block;
   }
 
-  /* ===== 正文排版 app-prose ===== */
+  /* ===== 正文 app-prose ===== */
   .app-prose {
     @apply max-w-none text-[1.0125rem] leading-[1.8] text-foreground;
   }
@@ -223,7 +260,6 @@
     @apply mt-0;
   }
 
-  /* 錨點跳轉時不要被頂欄遮住 */
   .app-prose :is(h1, h2, h3, h4, h5, h6) {
     scroll-margin-top: 5rem;
   }
@@ -285,23 +321,12 @@
     @apply my-6 border-s-[3px] border-accent/70 ps-4 text-muted-foreground italic;
   }
 
-  /* 行內 code */
   .app-prose :not(pre) > code {
     @apply rounded-md bg-muted px-1.5 py-0.5 text-[0.875em] font-normal text-foreground;
   }
 
-  [data-theme='dark'] .app-prose :not(pre) > code {
-    background-color: color-mix(in srgb, var(--muted) 90%, var(--accent) 4%);
-  }
-
-  /* 程式碼區塊 */
   .app-prose pre {
-    @apply my-6 overflow-x-auto rounded-xl bg-muted/80 px-4 py-4 text-[0.875rem] leading-relaxed;
-  }
-
-  [data-theme='dark'] .app-prose pre {
-    background-color: color-mix(in srgb, var(--muted) 80%, #000 20%);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 70%, transparent);
+    @apply my-6 overflow-x-auto rounded-xl bg-muted px-4 py-4 text-[0.875rem] leading-relaxed;
   }
 
   .app-prose pre code {
@@ -330,7 +355,6 @@
     @apply bg-muted/60 text-left font-semibold;
   }
 
-  /* 麵包屑 */
   .breadcrumb {
     @apply mb-6 text-sm text-muted-foreground;
   }
@@ -339,7 +363,6 @@
     @apply text-muted-foreground no-underline hover:text-accent;
   }
 
-  /* 列表分隔 */
   .post-list {
     @apply divide-y divide-border;
   }
@@ -348,31 +371,19 @@
     @apply py-5;
   }
 
-  /* 列表標題連結 */
   .post-title {
     @apply text-lg font-medium text-foreground no-underline;
     @apply hover:text-accent;
   }
 
-  /*
-   * 首頁／列表共用：編輯質感元件
-   * 乾淨、有層次，不過度花俏
-   */
-
-  /* 區塊小標（類似媒體站 section label） */
   .section-label {
     @apply mb-4 text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase;
   }
 
-  /* 區塊之間的呼吸感 */
   .home-section {
     @apply mb-14 sm:mb-16;
   }
 
-  /*
-   * 首頁：左分類側欄 + 右最新筆記
-   * 手機：分類改上方橫向
-   */
   .home-shell {
     @apply flex flex-col gap-8 lg:grid lg:grid-cols-[13.5rem_minmax(0,1fr)] lg:items-start lg:gap-10;
   }
@@ -381,7 +392,6 @@
     @apply lg:sticky lg:top-6;
   }
 
-  /* 手機：橫向可捲動分類；桌面：直向側欄 */
   .home-cat-nav {
     @apply flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0;
     -webkit-overflow-scrolling: touch;
@@ -399,10 +409,6 @@
     @apply bg-surface-hover text-accent;
   }
 
-  [data-theme='dark'] .home-cat-link {
-    background-color: color-mix(in srgb, var(--surface) 92%, transparent);
-  }
-
   .home-cat-title {
     @apply font-medium whitespace-nowrap;
   }
@@ -415,14 +421,10 @@
     @apply min-w-0;
   }
 
-  /* 最新筆記卡片網格 */
   .home-card-grid {
     @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
   }
 
-  /*
-   * 首頁筆記卡：無邊框、輕微 hover 放大
-   */
   .home-note-card {
     @apply block h-full rounded-xl bg-surface p-5 no-underline sm:p-6;
     transform: scale(1);
@@ -433,18 +435,10 @@
       box-shadow 0.22s ease;
   }
 
-  [data-theme='dark'] .home-note-card {
-    background-color: var(--surface);
-  }
-
   .home-note-card:hover {
     transform: scale(1.025);
     background-color: var(--surface-hover);
-    box-shadow: 0 8px 24px rgba(28, 27, 26, 0.06);
-  }
-
-  [data-theme='dark'] .home-note-card:hover {
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 12%, transparent);
   }
 
   .home-note-card-meta {
@@ -472,43 +466,30 @@
     overflow: hidden;
   }
 
-  /* 分類入口卡 */
   .category-card {
     @apply block rounded-xl border border-border bg-surface p-5 no-underline;
-    @apply shadow-[0_1px_2px_rgba(28,27,26,0.04)];
+    @apply shadow-[0_1px_2px_rgba(0,68,115,0.04)];
     @apply transition-[border-color,box-shadow,background-color,transform] duration-200;
-    @apply hover:border-accent/35 hover:bg-surface-hover hover:shadow-[0_8px_24px_rgba(28,27,26,0.06)];
-  }
-
-  [data-theme='dark'] .category-card {
-    @apply shadow-[0_1px_2px_rgba(0,0,0,0.25)];
-    @apply hover:shadow-[0_10px_28px_rgba(0,0,0,0.35)];
+    @apply hover:border-accent/35 hover:bg-surface-hover hover:shadow-[0_8px_24px_rgba(32,144,158,0.1)];
   }
 
   .category-card:hover {
     transform: translateY(-1px);
   }
 
-  /* 最新筆記：精簡條列（之後列表頁也可沿用） */
   .note-row {
     @apply block rounded-lg border border-transparent px-3 py-3.5 no-underline;
     @apply transition-[background-color,border-color] duration-150;
     @apply hover:border-border hover:bg-surface;
   }
 
-  /* 首篇精選 */
   .note-featured {
     @apply block rounded-xl border border-border bg-surface p-5 no-underline sm:p-6;
-    @apply shadow-[0_1px_2px_rgba(28,27,26,0.04)];
+    @apply shadow-[0_1px_2px_rgba(0,68,115,0.04)];
     @apply transition-[border-color,box-shadow,background-color] duration-200;
     @apply hover:border-accent/35 hover:bg-surface-hover;
   }
 
-  [data-theme='dark'] .note-featured {
-    @apply shadow-[0_1px_2px_rgba(0,0,0,0.25)];
-  }
-
-  /* 頁面標題區（列表／搜尋／標籤共用） */
   .page-header {
     @apply mb-8 border-b border-border pb-8 sm:mb-10 sm:pb-10;
   }
@@ -517,12 +498,10 @@
     @apply text-[1.75rem] font-semibold tracking-tight text-foreground sm:text-[1.9rem];
   }
 
-  /* 空列表時隱藏邊框容器感 */
   .note-rows.is-empty {
     @apply border-0 shadow-none;
   }
 
-  /* 分類快速切換 */
   .category-switcher {
     @apply flex flex-wrap gap-2;
   }
@@ -538,26 +517,12 @@
     @apply border-accent/40 bg-accent/10 text-accent;
   }
 
-  /*
-   * 筆記列表：精簡條列 + 低調編輯感
-   * 三大分類頁共用 .note-rows / .note-row-*
-   */
   .note-rows {
     @apply overflow-hidden rounded-xl border border-border bg-surface;
   }
 
-  [data-theme='dark'] .note-rows {
-    /* 深色：邊框稍柔、表面略抬高，避免糊成一片 */
-    border-color: color-mix(in srgb, var(--border) 90%, transparent);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  }
-
   .note-rows > li + li {
     @apply border-t border-border;
-  }
-
-  [data-theme='dark'] .note-rows > li + li {
-    border-color: color-mix(in srgb, var(--border) 75%, transparent);
   }
 
   .note-row-item {
@@ -569,13 +534,8 @@
     transition: background-color 0.15s ease;
   }
 
-  /* hover：只換底色，不位移、不加重陰影 */
   .note-row-link:hover {
     background-color: var(--surface-hover);
-  }
-
-  [data-theme='dark'] .note-row-link:hover {
-    background-color: color-mix(in srgb, var(--surface-hover) 88%, var(--accent) 4%);
   }
 
   .note-row-date {
@@ -608,30 +568,26 @@
     overflow: hidden;
   }
 
-  /* 舊 class 別名 */
   .note-list {
     @apply overflow-hidden rounded-xl border border-border bg-surface;
   }
 
-  /* 空狀態 */
   .empty-state {
     @apply rounded-xl border border-dashed border-border bg-surface/50 px-5 py-10
            text-center text-sm text-muted-foreground;
   }
 
-  /* 搜尋輸入框 */
   .search-input {
     @apply w-full rounded-xl border border-border bg-surface px-4 py-3.5 text-base
-           text-foreground shadow-[0_1px_2px_rgba(28,27,26,0.04)] outline-none;
+           text-foreground shadow-[0_1px_2px_rgba(0,68,115,0.04)] outline-none;
     @apply transition-[border-color,box-shadow] duration-150;
     @apply focus:border-accent focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent)_18%,transparent)];
   }
 
-  /* 標籤總覽 pill */
   .tag-pill {
     @apply inline-flex items-center gap-2 rounded-full border border-border bg-surface
            px-3.5 py-1.5 text-sm text-foreground no-underline;
-    @apply shadow-[0_1px_2px_rgba(28,27,26,0.04)];
+    @apply shadow-[0_1px_2px_rgba(0,68,115,0.04)];
     @apply transition-[border-color,background-color,color] duration-150;
     @apply hover:border-accent/40 hover:bg-surface-hover hover:text-accent;
   }

@@ -2,6 +2,7 @@
 /**
  * 全站共用版面
  * 網站名稱：紀錄學習的老紀
+ * 固定單一配色（無日間／夜間切換）
  */
 import '../styles/global.css';
 import { categories } from '../lib/categories';
@@ -40,18 +41,12 @@ const extraNav = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
     <title>{pageTitle}</title>
-
-    <script is:inline>
-      (function () {
-        const stored = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = stored === 'light' || stored === 'dark' ? stored : prefersDark ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', theme);
-      })();
-    </script>
   </head>
 
   <body class="flex min-h-screen flex-col">
@@ -70,61 +65,50 @@ const extraNav = [
           wide ? 'max-w-5xl' : 'max-w-3xl',
         ]}
       >
-        <a
-          href="/"
-          class:list={[
-            'text-lg font-semibold tracking-tight no-underline sm:text-xl',
-            isActive('/') && pathname === '/'
-              ? 'text-accent'
-              : 'text-foreground hover:text-accent',
-          ]}
-        >
-          {siteName}
+        <a href="/" class="site-brand" aria-label={`${siteName}（回首頁）`}>
+          <img
+            src="/logo.png"
+            alt=""
+            width="40"
+            height="40"
+            class="site-logo"
+            decoding="async"
+          />
+          <span
+            class:list={[
+              'site-brand-text',
+              isActive('/') && pathname === '/' && 'is-home',
+            ]}
+          >
+            {siteName}
+          </span>
         </a>
 
-        <div class="flex items-center gap-3 sm:gap-4">
-          {/* 頂部導覽：手機顯示分類捷徑；桌面首頁有側欄，頂部以搜尋／標籤為主 */}
-          <nav
-            class="flex flex-wrap items-center justify-end gap-x-3 gap-y-1 text-sm sm:gap-x-4"
-            aria-label="主要導覽"
-          >
-            {
-              categories.map((cat) => (
-                <a
-                  href={cat.href}
-                  class:list={[
-                    'nav-link hidden sm:inline',
-                    isActive(cat.href) && 'active-nav',
-                  ]}
-                >
-                  {cat.title}
-                </a>
-              ))
-            }
-            {
-              extraNav.map((item) => (
-                <a
-                  href={item.href}
-                  class:list={['nav-link', isActive(item.href) && 'active-nav']}
-                >
-                  {item.title}
-                </a>
-              ))
-            }
-          </nav>
-
-          <button
-            id="theme-toggle"
-            type="button"
-            class="rounded border border-border p-1.5 text-foreground no-underline
-                   hover:border-accent hover:text-accent"
-            aria-label="切換深色模式"
-            title="切換深色 / 淺色模式"
-          >
-            <span class="icon-moon inline-block text-base leading-none" aria-hidden="true">🌙</span>
-            <span class="icon-sun inline-block text-base leading-none" aria-hidden="true">☀️</span>
-          </button>
-        </div>
+        <nav
+          class="flex flex-wrap items-center justify-end gap-x-3 gap-y-1 text-sm sm:gap-x-4"
+          aria-label="主要導覽"
+        >
+          {
+            categories.map((cat) => (
+              <a
+                href={cat.href}
+                class:list={['nav-link hidden sm:inline', isActive(cat.href) && 'active-nav']}
+              >
+                {cat.title}
+              </a>
+            ))
+          }
+          {
+            extraNav.map((item) => (
+              <a
+                href={item.href}
+                class:list={['nav-link', isActive(item.href) && 'active-nav']}
+              >
+                {item.title}
+              </a>
+            ))
+          }
+        </nav>
       </div>
     </header>
 
@@ -146,15 +130,5 @@ const extraNav = [
     >
       <p>{siteName}</p>
     </footer>
-
-    <script>
-      const btn = document.getElementById('theme-toggle');
-      btn?.addEventListener('click', () => {
-        const html = document.documentElement;
-        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
-      });
-    </script>
   </body>
 </html>

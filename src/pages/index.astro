@@ -2,14 +2,14 @@
 /**
  * 首頁
  * - 左：三大分類側邊欄（手機改上方橫向）
- * - 右／中：最新筆記卡片（最多 9 篇）
+ * - 右／中：最新筆記卡片（最多 20 篇）
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { categories, getCategory } from '../lib/categories';
 import { formatDate, getAllNotes, getNotes, noteHref } from '../lib/notes';
 
-/** 首頁最多顯示幾篇最新筆記（8～10 之間取 9） */
-const LATEST_LIMIT = 9;
+/** 首頁最多顯示幾篇最新筆記 */
+const LATEST_LIMIT = 20;
 
 const allNotes = await getAllNotes();
 const latestNotes = allNotes.slice(0, LATEST_LIMIT);
