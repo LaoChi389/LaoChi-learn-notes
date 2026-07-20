@@ -1,0 +1,47 @@
+---
+/**
+ * 筆記列表列（三大分類頁共用）
+ * 顯示：日期、標題、簡短描述（若有）
+ * 設計：精簡條列、編輯感、互動克制
+ */
+import { formatDate, noteHref } from '../lib/notes';
+
+interface Props {
+  title: string;
+  description?: string;
+  date: Date;
+  href?: string;
+  categoryId: string;
+  entryId: string;
+  /** 跨分類時可顯示分類名（標籤頁用） */
+  meta?: string;
+}
+
+const {
+  title,
+  description,
+  date,
+  categoryId,
+  entryId,
+  meta,
+  href = noteHref(categoryId, entryId),
+} = Astro.props;
+---
+
+<article class="note-row-item">
+  <a href={href} class="note-row-link">
+    <time class="note-row-date" datetime={date.toISOString()}>
+      {formatDate(date)}
+    </time>
+
+    <div class="note-row-body">
+      {meta && <p class="note-row-meta">{meta}</p>}
+      <h2 class="note-row-title">{title}</h2>
+      {
+        description && (
+          <p class="note-row-desc">{description}</p>
+        )
+      }
+    </div>
+  </a>
+</article>

@@ -1,0 +1,109 @@
+---
+/**
+ * 三大分類列表頁（共用同一版面）
+ * /ai、/electrical、/system
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NoteCard from '../../components/NoteCard.astro';
+import { categories, getCategory, type CategoryId } from '../../lib/categories';
+import { formatDate } from '../../lib/notes';
+
+export async function getStaticPaths() {
+  return categories.map((cat) => ({
+    params: { category: cat.id },
+  }));
+}
+
+const { category: categoryParam } = Astro.params;
+const category = getCategory(categoryParam ?? '');
+
+if (!category) {
+  return Astro.redirect('/');
+}
+
+const categoryId = category.id as CategoryId;
+const notes = (await getCollection(categoryId, ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const latestDate = notes[0] ? formatDate(notes[0].data.date) : null;
+---
+
+<BaseLayout title={category.title} description={category.description}>
+  <nav class="breadcrumb" aria-label="麵包屑">
+    <a href="/">首頁</a>
+    <span class="mx-2 opacity-50">/</span>
+    <span class="text-foreground">{category.title}</span>
+  </nav>
+
+  {/* 頁首：清楚但不花 */}
+  <header class="page-header">
+    <p class="section-label !mb-3">Category</p>
+    <h1>{category.title}</h1>
+    <p class="mt-3 max-w-xl text-[0.975rem] leading-relaxed text-muted-foreground">
+      {category.description}
+    </p>
+    <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+      <span>
+        <span class="font-medium tabular-nums text-foreground">{notes.length}</span> 篇筆記
+      </span>
+      {
+        latestDate && (
+          <>
+            <span aria-hidden="true">·</span>
+            <span>最近更新 {latestDate}</span>
+          </>
+        )
+      }
+    </div>
+
+    {/* 三大分類切換（風格一致） */}
+    <nav class="category-switcher mt-6" aria-label="切換分類">
+      {
+        categories.map((cat) => (
+          <a
+            href={cat.href}
+            class:list={['category-switcher-item', cat.id === category.id && 'is-active']}
+            aria-current={cat.id === category.id ? 'page' : undefined}
+          >
+            {cat.title}
+          </a>
+        ))
+      }
+    </nav>
+  </header>
+
+  {
+    notes.length === 0 ? (
+      <p class="empty-state">
+        這個分類還沒有筆記。在{' '}
+        <code class="rounded bg-muted px-1.5 py-0.5 text-sm">src/content/{category.id}/</code>{' '}
+        新增 .md 檔即可。
+      </p>
+    ) : (
+      <section aria-label={`${category.title}筆記列表`}>
+        {/* 單一列表容器：低調有質感 */}
+        <ul class="note-rows" role="list">
+          {notes.map((note) => (
+            <li>
+              <NoteCard
+                title={note.data.title}
+                description={note.data.description}
+                date={note.data.date}
+                categoryId={category.id}
+                entryId={note.id}
+              />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <p class="mt-12 text-center text-sm">
+    <a href="/" class="text-muted-foreground no-underline hover:text-accent">
+      ← 回首頁
+    </a>
+  </p>
+</BaseLayout>

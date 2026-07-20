@@ -1,0 +1,108 @@
+---
+/**
+ * 首頁
+ * - 左：三大分類側邊欄（手機改上方橫向）
+ * - 右／中：最新筆記卡片（最多 9 篇）
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { categories, getCategory } from '../lib/categories';
+import { formatDate, getAllNotes, getNotes, noteHref } from '../lib/notes';
+
+/** 首頁最多顯示幾篇最新筆記（8～10 之間取 9） */
+const LATEST_LIMIT = 9;
+
+const allNotes = await getAllNotes();
+const latestNotes = allNotes.slice(0, LATEST_LIMIT);
+
+const counts: Record<string, number> = {};
+for (const cat of categories) {
+  counts[cat.id] = (await getNotes(cat.id)).length;
+}
+---
+
+<BaseLayout title="首頁" wide>
+  {/* 標題 + 自我介紹（簡潔） */}
+  <header class="mb-8 sm:mb-10">
+    <h1 class="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+      紀錄學習的老紀
+    </h1>
+    <p class="mt-3 max-w-2xl text-[0.95rem] leading-relaxed text-muted-foreground">
+      我是老紀，原系統工程師，成了MEP工程師，學習更多知識，以及鞏固分享以前的知識。
+    </p>
+  </header>
+
+  {/*
+    桌面：左側欄 + 右側最新筆記
+    手機：分類橫向在上，筆記在下
+  */}
+  <div class="home-shell">
+    {/* ===== 側邊／上方：三大分類 ===== */}
+    <aside class="home-sidebar" aria-label="筆記分類">
+      <p class="section-label !mb-3">分類</p>
+      <nav class="home-cat-nav">
+        {
+          categories.map((cat) => (
+            <a href={cat.href} class="home-cat-link">
+              <span class="home-cat-title">{cat.title}</span>
+              <span class="home-cat-count tabular-nums">{counts[cat.id] ?? 0}</span>
+            </a>
+          ))
+        }
+      </nav>
+      <p class="mt-4 hidden text-xs leading-relaxed text-muted-foreground lg:block">
+        點選分類可進入完整筆記列表。
+      </p>
+    </aside>
+
+    {/* ===== 主要區域：最新筆記卡片 ===== */}
+    <section class="home-main" aria-labelledby="latest-heading">
+      <div class="mb-5 flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <p class="section-label !mb-2">Recent</p>
+          <h2
+            id="latest-heading"
+            class="text-xl font-semibold tracking-tight text-foreground"
+          >
+            最新筆記
+          </h2>
+        </div>
+        <span class="text-sm text-muted-foreground">
+          顯示最近 {latestNotes.length} 篇
+        </span>
+      </div>
+
+      {
+        latestNotes.length === 0 ? (
+          <p class="empty-state">
+            還沒有筆記。到{' '}
+            <code class="rounded bg-muted px-1.5 py-0.5 text-sm">src/content/</code>{' '}
+            新增 .md 即可。
+          </p>
+        ) : (
+          <ul class="home-card-grid" role="list">
+            {latestNotes.map((note) => {
+              const cat = getCategory(note.categoryId);
+              return (
+                <li>
+                  <a href={noteHref(note.categoryId, note.id)} class="home-note-card">
+                    <div class="home-note-card-meta">
+                      <span class="text-accent">{cat?.title ?? note.categoryId}</span>
+                      <span class="home-note-card-dot" aria-hidden="true" />
+                      <time datetime={note.data.date.toISOString()}>
+                        {formatDate(note.data.date)}
+                      </time>
+                    </div>
+                    <h3 class="home-note-card-title">{note.data.title}</h3>
+                    {note.data.description && (
+                      <p class="home-note-card-desc">{note.data.description}</p>
+                    )}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        )
+      }
+    </section>
+  </div>
+</BaseLayout>

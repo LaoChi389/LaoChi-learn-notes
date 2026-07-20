@@ -1,0 +1,65 @@
+---
+/**
+ * 標籤筆記列表：與分類頁同一套條列風格
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NoteCard from '../../components/NoteCard.astro';
+import { getCategory } from '../../lib/categories';
+import { getAllTags, getNotesByTag } from '../../lib/notes';
+
+export async function getStaticPaths() {
+  const tags = await getAllTags();
+  return tags.map(({ tag }) => ({
+    params: { tag },
+  }));
+}
+
+const rawTag = Astro.params.tag ?? '';
+const tag = decodeURIComponent(rawTag);
+const notes = await getNotesByTag(tag);
+---
+
+<BaseLayout title={`#${tag}`} description={`標籤「${tag}」的筆記列表`}>
+  <nav class="breadcrumb" aria-label="麵包屑">
+    <a href="/">首頁</a>
+    <span class="mx-2 opacity-50">/</span>
+    <a href="/tags">標籤</a>
+    <span class="mx-2 opacity-50">/</span>
+    <span class="text-foreground">#{tag}</span>
+  </nav>
+
+  <header class="page-header">
+    <p class="section-label !mb-3">Tag</p>
+    <h1>#{tag}</h1>
+    <p class="mt-3 text-sm text-muted-foreground">
+      <span class="font-medium text-foreground">{notes.length}</span> 篇筆記
+    </p>
+  </header>
+
+  {
+    notes.length === 0 ? (
+      <p class="empty-state">這個標籤目前沒有筆記。</p>
+    ) : (
+      <ul class="note-rows" role="list">
+        {notes.map((note) => (
+          <li>
+            <NoteCard
+              title={note.data.title}
+              description={note.data.description}
+              date={note.data.date}
+              categoryId={note.categoryId}
+              entryId={note.id}
+              meta={getCategory(note.categoryId)?.title}
+            />
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  <p class="mt-10 text-center text-sm">
+    <a href="/tags" class="text-muted-foreground no-underline hover:text-accent">
+      ← 全部標籤
+    </a>
+  </p>
+</BaseLayout>

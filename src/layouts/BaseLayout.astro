@@ -1,0 +1,160 @@
+---
+/**
+ * 全站共用版面
+ * 網站名稱：紀錄學習的老紀
+ */
+import '../styles/global.css';
+import { categories } from '../lib/categories';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** 首頁等需要較寬版面時開啟 */
+  wide?: boolean;
+}
+
+const siteName = '紀錄學習的老紀';
+const defaultDescription =
+  '我是老紀，原系統工程師，成了MEP工程師，學習更多知識，以及鞏固分享以前的知識。';
+
+const { title, description = defaultDescription, wide = false } = Astro.props;
+const pageTitle = title === '首頁' ? siteName : `${title} · ${siteName}`;
+
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+function isActive(href: string) {
+  if (href === '/') return pathname === '/';
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+const extraNav = [
+  { href: '/tags', title: '標籤' },
+  { href: '/search', title: '搜尋' },
+];
+---
+
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <title>{pageTitle}</title>
+
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = stored === 'light' || stored === 'dark' ? stored : prefersDark ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+  </head>
+
+  <body class="flex min-h-screen flex-col">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50
+             focus:bg-accent focus:px-3 focus:py-2 focus:text-accent-foreground focus:no-underline"
+    >
+      跳到主要內容
+    </a>
+
+    <header class="site-header">
+      <div
+        class:list={[
+          'mx-auto flex w-full items-center justify-between gap-4 px-4 py-5 sm:py-6',
+          wide ? 'max-w-5xl' : 'max-w-3xl',
+        ]}
+      >
+        <a
+          href="/"
+          class:list={[
+            'text-lg font-semibold tracking-tight no-underline sm:text-xl',
+            isActive('/') && pathname === '/'
+              ? 'text-accent'
+              : 'text-foreground hover:text-accent',
+          ]}
+        >
+          {siteName}
+        </a>
+
+        <div class="flex items-center gap-3 sm:gap-4">
+          {/* 頂部導覽：手機顯示分類捷徑；桌面首頁有側欄，頂部以搜尋／標籤為主 */}
+          <nav
+            class="flex flex-wrap items-center justify-end gap-x-3 gap-y-1 text-sm sm:gap-x-4"
+            aria-label="主要導覽"
+          >
+            {
+              categories.map((cat) => (
+                <a
+                  href={cat.href}
+                  class:list={[
+                    'nav-link hidden sm:inline',
+                    isActive(cat.href) && 'active-nav',
+                  ]}
+                >
+                  {cat.title}
+                </a>
+              ))
+            }
+            {
+              extraNav.map((item) => (
+                <a
+                  href={item.href}
+                  class:list={['nav-link', isActive(item.href) && 'active-nav']}
+                >
+                  {item.title}
+                </a>
+              ))
+            }
+          </nav>
+
+          <button
+            id="theme-toggle"
+            type="button"
+            class="rounded border border-border p-1.5 text-foreground no-underline
+                   hover:border-accent hover:text-accent"
+            aria-label="切換深色模式"
+            title="切換深色 / 淺色模式"
+          >
+            <span class="icon-moon inline-block text-base leading-none" aria-hidden="true">🌙</span>
+            <span class="icon-sun inline-block text-base leading-none" aria-hidden="true">☀️</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main
+      id="main-content"
+      class:list={[
+        'mx-auto w-full flex-1 px-4 pb-12 pt-2 sm:pb-16',
+        wide ? 'max-w-5xl' : 'max-w-3xl',
+      ]}
+    >
+      <slot />
+    </main>
+
+    <footer
+      class:list={[
+        'mx-auto w-full border-t border-border px-4 py-6 text-center text-sm text-muted-foreground',
+        wide ? 'max-w-5xl' : 'max-w-3xl',
+      ]}
+    >
+      <p>{siteName}</p>
+    </footer>
+
+    <script>
+      const btn = document.getElementById('theme-toggle');
+      btn?.addEventListener('click', () => {
+        const html = document.documentElement;
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+      });
+    </script>
+  </body>
+</html>

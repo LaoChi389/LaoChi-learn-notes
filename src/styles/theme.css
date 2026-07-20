@@ -1,0 +1,31 @@
+/**
+ * 全站色票（AstroPaper 為底，微調以提升編輯質感）
+ * 改顏色優先改這個檔案
+ */
+
+/* 淺色：暖紙感、好讀 */
+:root,
+[data-theme='light'] {
+  --background: #f7f6f3;
+  --foreground: #1a1918;
+  --accent: #0a648c;
+  --accent-foreground: #ffffff;
+  --muted: #ebe8e3;
+  --muted-foreground: #5f5a55;
+  --border: #e0dbd4;
+  --surface: #ffffff;
+  --surface-hover: #f1efeb;
+}
+
+/* 深色：對比足夠、列表 hover 仍清楚 */
+[data-theme='dark'] {
+  --background: #121722;
+  --foreground: #e9edf5;
+  --accent: #e8a06a;
+  --accent-foreground: #1a1208;
+  --muted: #252d40;
+  --muted-foreground: #9aa3b5;
+  --border: #2e374c;
+  --surface: #1a2030;
+  --surface-hover: #222a3d;
+}

@@ -1,0 +1,39 @@
+---
+/**
+ * 文章目錄（Table of Contents）
+ * 由 Markdown 標題自動產生，點擊可跳轉
+ */
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+  /** 只顯示 h2～h3（預設） */
+  minDepth?: number;
+  maxDepth?: number;
+}
+
+const { headings, minDepth = 2, maxDepth = 3 } = Astro.props;
+
+const items = headings.filter((h) => h.depth >= minDepth && h.depth <= maxDepth);
+---
+
+{
+  items.length > 0 && (
+    <nav class="toc" aria-label="文章目錄">
+      <p class="toc-title">目錄</p>
+      <ol class="toc-list">
+        {items.map((h) => (
+          <li class:list={['toc-item', `toc-depth-${h.depth}`]}>
+            <a href={`#${h.slug}`} class="toc-link">
+              {h.text}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
