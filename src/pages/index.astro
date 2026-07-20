@@ -1,14 +1,13 @@
 ---
 /**
- * 首頁
- * - 左：三大分類側邊欄（手機改上方橫向）
- * - 右／中：最新筆記卡片（最多 20 篇）
+ * 首頁：Bento 風格 + Toon 筆記卡
+ * 結構：Hero → 三大分類 → 最新筆記（最多 20）
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import NotePreviewCard from '../components/NotePreviewCard.svelte';
 import { categories, getCategory } from '../lib/categories';
 import { formatDate, getAllNotes, getNotes, noteHref } from '../lib/notes';
 
-/** 首頁最多顯示幾篇最新筆記 */
 const LATEST_LIMIT = 20;
 
 const allNotes = await getAllNotes();
@@ -18,85 +17,87 @@ const counts: Record<string, number> = {};
 for (const cat of categories) {
   counts[cat.id] = (await getNotes(cat.id)).length;
 }
+
+/** 分類卡點綴色（循環使用，仍屬同色系） */
+const catAccents = ['var(--accent)', 'var(--tone-2-3)', 'var(--tone-2-5)'];
 ---
 
 <BaseLayout title="首頁" wide>
-  {/* 標題 + 自我介紹（簡潔） */}
-  <header class="mb-8 sm:mb-10">
-    <h1 class="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-      紀錄學習的老紀
-    </h1>
-    <p class="mt-3 max-w-2xl text-[0.95rem] leading-relaxed text-muted-foreground">
-      我是老紀，原系統工程師，成了MEP工程師，學習更多知識，以及鞏固分享以前的知識。
-    </p>
-  </header>
+  <div class="bento">
+    {/* ===== Hero 介紹 ===== */}
+    <header class="bento-hero toon-card toon-card--hero toon-card--static">
+      <p class="section-label !mb-2 !text-[0.7rem]">Learning log</p>
+      <h1 class="bento-hero-title">紀錄學習的老紀</h1>
+      <p class="bento-hero-text">
+        我是老紀，原系統工程師，成了MEP工程師，學習更多知識，以及鞏固分享以前的知識。
+      </p>
+      <div class="bento-hero-meta">
+        <span class="toon-badge">共 {allNotes.length} 篇筆記</span>
+        <a href="/search" class="toon-btn toon-btn--ghost">搜尋</a>
+        <a href="/tags" class="toon-btn toon-btn--ghost">標籤</a>
+      </div>
+    </header>
 
-  {/*
-    桌面：左側欄 + 右側最新筆記
-    手機：分類橫向在上，筆記在下
-  */}
-  <div class="home-shell">
-    {/* ===== 側邊／上方：三大分類 ===== */}
-    <aside class="home-sidebar" aria-label="筆記分類">
-      <p class="section-label !mb-3">分類</p>
-      <nav class="home-cat-nav">
+    {/* ===== 三大分類（Bento 區塊） ===== */}
+    <section class="bento-cats" aria-label="筆記分類">
+      <div class="bento-section-head">
+        <h2 class="bento-section-title">三大分類</h2>
+        <p class="bento-section-desc">點進去看完整列表</p>
+      </div>
+      <ul class="bento-cat-grid" role="list">
         {
-          categories.map((cat) => (
-            <a href={cat.href} class="home-cat-link">
-              <span class="home-cat-title">{cat.title}</span>
-              <span class="home-cat-count tabular-nums">{counts[cat.id] ?? 0}</span>
-            </a>
+          categories.map((cat, i) => (
+            <li>
+              <a
+                href={cat.href}
+                class="toon-card bento-cat-card"
+                style={`--cat-accent: ${catAccents[i % catAccents.length]}`}
+              >
+                <span class="bento-cat-count tabular-nums">{counts[cat.id] ?? 0}</span>
+                <h3 class="bento-cat-title">{cat.title}</h3>
+                <p class="bento-cat-desc">{cat.description}</p>
+                <span class="bento-cat-go">進入 →</span>
+              </a>
+            </li>
           ))
         }
-      </nav>
-      <p class="mt-4 hidden text-xs leading-relaxed text-muted-foreground lg:block">
-        點選分類可進入完整筆記列表。
-      </p>
-    </aside>
+      </ul>
+    </section>
 
-    {/* ===== 主要區域：最新筆記卡片 ===== */}
-    <section class="home-main" aria-labelledby="latest-heading">
-      <div class="mb-5 flex flex-wrap items-end justify-between gap-2">
+    {/* ===== 最新筆記 ===== */}
+    <section class="bento-notes" aria-labelledby="latest-heading">
+      <div class="bento-section-head">
         <div>
-          <p class="section-label !mb-2">Recent</p>
-          <h2
-            id="latest-heading"
-            class="text-xl font-semibold tracking-tight text-foreground"
-          >
-            最新筆記
-          </h2>
+          <p class="section-label !mb-1">Recent</p>
+          <h2 id="latest-heading" class="bento-section-title">最新筆記</h2>
         </div>
         <span class="text-sm text-muted-foreground">
-          顯示最近 {latestNotes.length} 篇
+          最近 {latestNotes.length} 篇
         </span>
       </div>
 
       {
         latestNotes.length === 0 ? (
-          <p class="empty-state">
+          <p class="empty-state toon-card">
             還沒有筆記。到{' '}
-            <code class="rounded bg-muted px-1.5 py-0.5 text-sm">src/content/</code>{' '}
+            <code class="rounded-lg bg-muted px-1.5 py-0.5 text-sm">src/content/</code>{' '}
             新增 .md 即可。
           </p>
         ) : (
-          <ul class="home-card-grid" role="list">
-            {latestNotes.map((note) => {
+          <ul class="bento-note-grid" role="list">
+            {latestNotes.map((note, i) => {
               const cat = getCategory(note.categoryId);
               return (
-                <li>
-                  <a href={noteHref(note.categoryId, note.id)} class="home-note-card">
-                    <div class="home-note-card-meta">
-                      <span class="text-accent">{cat?.title ?? note.categoryId}</span>
-                      <span class="home-note-card-dot" aria-hidden="true" />
-                      <time datetime={note.data.date.toISOString()}>
-                        {formatDate(note.data.date)}
-                      </time>
-                    </div>
-                    <h3 class="home-note-card-title">{note.data.title}</h3>
-                    {note.data.description && (
-                      <p class="home-note-card-desc">{note.data.description}</p>
-                    )}
-                  </a>
+                <li class:list={[i === 0 && 'bento-note-featured']}>
+                  <NotePreviewCard
+                    href={noteHref(note.categoryId, note.id)}
+                    title={note.data.title}
+                    description={note.data.description}
+                    dateLabel={formatDate(note.data.date)}
+                    dateIso={note.data.date.toISOString()}
+                    categoryLabel={cat?.title ?? note.categoryId}
+                    featured={i === 0}
+                  />
                 </li>
               );
             })}

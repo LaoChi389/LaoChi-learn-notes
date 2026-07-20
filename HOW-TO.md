@@ -103,8 +103,9 @@ src/lib/categories.ts
 |------|------|
 | 網站名稱、導覽 | `src/layouts/BaseLayout.astro`（名稱：紀錄學習的老紀） |
 | 首頁佈局與自我介紹 | `src/pages/index.astro` |
-| 全站色票（Misty Lightseagreen） | `src/styles/theme.css` |
-| 版面與筆記內文排版 | `src/styles/global.css` |
+| 全站色票（Misty Lightseagreen / Toon） | `src/styles/theme.css` |
+| 版面與 Toon 樣式 | `src/styles/global.css` |
+| 筆記預覽卡（Svelte） | `src/components/NotePreviewCard.svelte` |
 | 首頁 | `src/pages/index.astro` |
 | 分類列表頁 | `src/pages/[category]/index.astro` |
 | 單篇筆記頁 | `src/pages/[category]/[...slug].astro` |

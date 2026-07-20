@@ -1,13 +1,12 @@
 ---
 /**
- * 三大分類列表頁（共用同一版面）
- * /ai、/electrical、/system
+ * 三大分類列表頁（Toon 卡片列表）
  */
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import NoteCard from '../../components/NoteCard.astro';
+import NotePreviewCard from '../../components/NotePreviewCard.svelte';
 import { categories, getCategory, type CategoryId } from '../../lib/categories';
-import { formatDate } from '../../lib/notes';
+import { formatDate, noteHref } from '../../lib/notes';
 
 export async function getStaticPaths() {
   return categories.map((cat) => ({
@@ -37,28 +36,17 @@ const latestDate = notes[0] ? formatDate(notes[0].data.date) : null;
     <span class="text-foreground">{category.title}</span>
   </nav>
 
-  {/* 頁首：清楚但不花 */}
-  <header class="page-header">
+  <header class="page-header toon-card toon-card--static">
     <p class="section-label !mb-3">Category</p>
     <h1>{category.title}</h1>
     <p class="mt-3 max-w-xl text-[0.975rem] leading-relaxed text-muted-foreground">
       {category.description}
     </p>
     <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
-      <span>
-        <span class="font-medium tabular-nums text-foreground">{notes.length}</span> 篇筆記
-      </span>
-      {
-        latestDate && (
-          <>
-            <span aria-hidden="true">·</span>
-            <span>最近更新 {latestDate}</span>
-          </>
-        )
-      }
+      <span class="toon-badge">{notes.length} 篇</span>
+      {latestDate && <span>最近更新 {latestDate}</span>}
     </div>
 
-    {/* 三大分類切換（風格一致） */}
     <nav class="category-switcher mt-6" aria-label="切換分類">
       {
         categories.map((cat) => (
@@ -78,21 +66,22 @@ const latestDate = notes[0] ? formatDate(notes[0].data.date) : null;
     notes.length === 0 ? (
       <p class="empty-state">
         這個分類還沒有筆記。在{' '}
-        <code class="rounded bg-muted px-1.5 py-0.5 text-sm">src/content/{category.id}/</code>{' '}
+        <code class="rounded-lg bg-muted px-1.5 py-0.5 text-sm">src/content/{category.id}/</code>{' '}
         新增 .md 檔即可。
       </p>
     ) : (
       <section aria-label={`${category.title}筆記列表`}>
-        {/* 單一列表容器：低調有質感 */}
-        <ul class="note-rows" role="list">
-          {notes.map((note) => (
-            <li>
-              <NoteCard
+        <ul class="bento-note-grid" role="list">
+          {notes.map((note, i) => (
+            <li class:list={[i === 0 && 'bento-note-featured']}>
+              <NotePreviewCard
+                href={noteHref(category.id, note.id)}
                 title={note.data.title}
                 description={note.data.description}
-                date={note.data.date}
-                categoryId={category.id}
-                entryId={note.id}
+                dateLabel={formatDate(note.data.date)}
+                dateIso={note.data.date.toISOString()}
+                categoryLabel={category.title}
+                featured={i === 0}
               />
             </li>
           ))}
@@ -102,8 +91,6 @@ const latestDate = notes[0] ? formatDate(notes[0].data.date) : null;
   }
 
   <p class="mt-12 text-center text-sm">
-    <a href="/" class="text-muted-foreground no-underline hover:text-accent">
-      ← 回首頁
-    </a>
+    <a href="/" class="toon-btn toon-btn--ghost">← 回首頁</a>
   </p>
 </BaseLayout>

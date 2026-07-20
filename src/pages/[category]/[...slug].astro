@@ -70,12 +70,11 @@ const hasToc = headings.some((h) => h.depth >= 2 && h.depth <= 3);
   </nav>
 
   {/* ===== 標題區 ===== */}
-  <header class="article-header">
+  <header class="article-header toon-card toon-card--static">
     <div class="article-meta">
-      <a href={category.href} class="article-category">
+      <a href={category.href} class="article-category toon-badge">
         {category.title}
       </a>
-      <span class="article-meta-dot" aria-hidden="true" />
       <time class="article-date" datetime={entry.data.date.toISOString()}>
         {formatDate(entry.data.date)}
       </time>
@@ -108,7 +107,7 @@ const hasToc = headings.some((h) => h.depth >= 2 && h.depth <= 3);
       )
     }
 
-    <div class="article-body">
+    <div class="article-body toon-card toon-card--static article-body-card">
       <article class="app-prose">
         <Content />
       </article>
@@ -117,7 +116,9 @@ const hasToc = headings.some((h) => h.depth >= 2 && h.depth <= 3);
 
   {/* ===== 返回分類 ===== */}
   <p class="article-back">
-    <a href={category.href}>← 返回{category.title}列表</a>
+    <a href={category.href} class="toon-btn toon-btn--ghost">
+      ← 返回{category.title}列表
+    </a>
   </p>
 
   {/* ===== 上一篇 / 下一篇 ===== */}
@@ -125,7 +126,7 @@ const hasToc = headings.some((h) => h.depth >= 2 && h.depth <= 3);
     <div class="article-pager-item">
       {
         newer ? (
-          <a href={noteHref(category.id, newer.id)} class="article-pager-link">
+          <a href={noteHref(category.id, newer.id)} class="article-pager-link toon-card">
             <span class="article-pager-label">上一篇</span>
             <span class="article-pager-title">{newer.data.title}</span>
           </a>
@@ -137,7 +138,7 @@ const hasToc = headings.some((h) => h.depth >= 2 && h.depth <= 3);
     <div class="article-pager-item article-pager-item--next">
       {
         older ? (
-          <a href={noteHref(category.id, older.id)} class="article-pager-link">
+          <a href={noteHref(category.id, older.id)} class="article-pager-link toon-card">
             <span class="article-pager-label">下一篇</span>
             <span class="article-pager-title">{older.data.title}</span>
           </a>

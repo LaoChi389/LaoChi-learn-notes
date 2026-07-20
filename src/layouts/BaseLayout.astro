@@ -61,7 +61,7 @@ const extraNav = [
     <header class="site-header">
       <div
         class:list={[
-          'mx-auto flex w-full items-center justify-between gap-4 px-4 py-5 sm:py-6',
+          'site-header-inner mx-auto flex w-full items-center justify-between gap-4 px-4 py-4 sm:py-5',
           wide ? 'max-w-5xl' : 'max-w-3xl',
         ]}
       >
@@ -84,15 +84,15 @@ const extraNav = [
           </span>
         </a>
 
-        <nav
-          class="flex flex-wrap items-center justify-end gap-x-3 gap-y-1 text-sm sm:gap-x-4"
-          aria-label="主要導覽"
-        >
+        <nav class="site-nav" aria-label="主要導覽">
           {
             categories.map((cat) => (
               <a
                 href={cat.href}
-                class:list={['nav-link hidden sm:inline', isActive(cat.href) && 'active-nav']}
+                class:list={[
+                  'site-nav-link hidden sm:inline-flex',
+                  isActive(cat.href) && 'is-active',
+                ]}
               >
                 {cat.title}
               </a>
@@ -102,7 +102,7 @@ const extraNav = [
             extraNav.map((item) => (
               <a
                 href={item.href}
-                class:list={['nav-link', isActive(item.href) && 'active-nav']}
+                class:list={['site-nav-link', isActive(item.href) && 'is-active']}
               >
                 {item.title}
               </a>
@@ -124,11 +124,11 @@ const extraNav = [
 
     <footer
       class:list={[
-        'mx-auto w-full border-t border-border px-4 py-6 text-center text-sm text-muted-foreground',
+        'site-footer mx-auto w-full px-4 py-6 text-center text-sm text-muted-foreground',
         wide ? 'max-w-5xl' : 'max-w-3xl',
       ]}
     >
-      <p>{siteName}</p>
+      <p class="site-footer-inner">{siteName}</p>
     </footer>
   </body>
 </html>

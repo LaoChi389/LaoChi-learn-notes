@@ -1,6 +1,6 @@
 ---
 /**
- * 標籤小膠囊（低調、不搶標題）
+ * 標籤小膠囊（Toon 風格）
  */
 import { tagHref } from '../lib/notes';
 
@@ -15,15 +15,14 @@ const visible = tags.map((t) => t.trim()).filter(Boolean);
 
 {
   visible.length > 0 && (
-    <ul class:list={['flex flex-wrap gap-1.5', size === 'md' ? 'mt-4' : 'mt-2']} role="list">
+    <ul class:list={['flex flex-wrap gap-2', size === 'md' ? 'mt-4' : 'mt-2']} role="list">
       {visible.map((tag) => (
         <li>
           <a
             href={tagHref(tag)}
             class:list={[
-              'inline-block rounded-full border border-border/70 bg-muted/40 text-muted-foreground no-underline',
-              'transition-colors hover:border-accent/35 hover:bg-accent/8 hover:text-accent',
-              size === 'md' ? 'px-2.5 py-1 text-sm' : 'px-2.5 py-0.5 text-[0.7rem] tracking-wide',
+              'toon-badge no-underline',
+              size === 'md' ? 'px-3 py-1 text-sm' : '',
             ]}
           >
             #{tag}
