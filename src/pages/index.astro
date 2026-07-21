@@ -1,72 +1,161 @@
 ---
 /**
- * 首頁：Hero + 最新筆記
- * 三大分類改由右下／可拖動圓餅選單進入（見 CategoryPieMenu）
+ * 首頁
+ * 1. 精選內容（大版面 + 底色分塊）
+ * 2. 最新筆記（垂直條列，含首圖縮圖）
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
-import NotePreviewCard from '../components/NotePreviewCard.svelte';
 import { getCategory } from '../lib/categories';
-import { formatDate, getAllNotes, noteHref } from '../lib/notes';
+import {
+  extractFirstImage,
+  formatDate,
+  getAllNotes,
+  getFeaturedNotes,
+  noteHref,
+} from '../lib/notes';
 
-const LATEST_LIMIT = 20;
+const LATEST_LIMIT = 10;
 
-const allNotes = await getAllNotes();
-const latestNotes = allNotes.slice(0, LATEST_LIMIT);
+const [featuredNotes, allNotes] = await Promise.all([
+  getFeaturedNotes(),
+  getAllNotes(),
+]);
+
+const featuredKeys = new Set(featuredNotes.map((n) => `${n.categoryId}:${n.id}`));
+
+const latestNotes = allNotes
+  .filter((n) => n.categoryId !== 'about')
+  .filter((n) => !featuredKeys.has(`${n.categoryId}:${n.id}`))
+  .slice(0, LATEST_LIMIT)
+  .map((n) => ({
+    ...n,
+    // Collection entry 的 body 為 Markdown 原文
+    image: extractFirstImage((n as { body?: string }).body),
+  }));
+
+const hero = featuredNotes[0];
+const moreFeatured = featuredNotes.slice(1);
 ---
 
 <BaseLayout title="首頁" wide>
-  <div class="bento">
-    {/* ===== Hero 介紹 ===== */}
-    <header class="bento-hero toon-card toon-card--hero toon-card--static">
-      <p class="section-label !mb-2 !text-[0.7rem]">Learning log</p>
-      <h1 class="bento-hero-title">紀錄學習的老紀</h1>
-      <p class="bento-hero-text">
-        我是老紀，原系統工程師，成了MEP工程師，學習更多知識，以及鞏固分享以前的知識。
-      </p>
-      <div class="bento-hero-meta">
-        <span class="toon-badge">共 {allNotes.length} 篇筆記</span>
-        <a href="/search" class="toon-btn toon-btn--ghost">搜尋</a>
-        <a href="/tags" class="toon-btn toon-btn--ghost">標籤</a>
-      </div>
-      <p class="bento-hero-hint">
-        將滑鼠移到「分類」圓餅上即可展開三大分類；也可拖到喜歡的位置。
-      </p>
-    </header>
+  <div class="home-stack">
+    {/* ===== 精選內容（有底色分塊） ===== */}
+    <section class="feature-section" aria-labelledby="featured-heading">
+      <div class="feature-section-inner">
+        <div class="bento-section-head">
+          <div>
+            <p class="section-label !mb-1">Featured</p>
+            <h2 id="featured-heading" class="bento-section-title">精選內容</h2>
+          </div>
+          {
+            featuredNotes.length > 0 && (
+              <span class="text-sm text-muted-foreground">
+                {featuredNotes.length} 篇
+              </span>
+            )
+          }
+        </div>
 
-    {/* ===== 最新筆記 ===== */}
-    <section class="bento-notes" aria-labelledby="latest-heading">
+        {
+          !hero ? (
+            <p class="feature-empty">
+              目前沒有精選內容。在筆記 frontmatter 加上{' '}
+              <code class="rounded-lg bg-muted px-1.5 py-0.5 text-sm">featured: true</code>{' '}
+              即可。
+            </p>
+          ) : (
+            <div class="feature-grid">
+              <a href={noteHref(hero.categoryId, hero.id)} class="feature-hero toon-card">
+                <div class="feature-hero-meta">
+                  <span class="toon-badge">
+                    {getCategory(hero.categoryId)?.title ?? hero.categoryId}
+                  </span>
+                  <time datetime={hero.data.date.toISOString()}>
+                    {formatDate(hero.data.date)}
+                  </time>
+                </div>
+                <h3 class="feature-hero-title">{hero.data.title}</h3>
+                {
+                  hero.data.description && (
+                    <p class="feature-hero-desc">{hero.data.description}</p>
+                  )
+                }
+                <span class="feature-hero-cta">閱讀精選 →</span>
+              </a>
+
+              {
+                moreFeatured.length > 0 && (
+                  <ul class="feature-side" role="list">
+                    {moreFeatured.map((note) => (
+                      <li>
+                        <a
+                          href={noteHref(note.categoryId, note.id)}
+                          class="feature-side-card toon-card"
+                        >
+                          <span class="toon-badge">
+                            {getCategory(note.categoryId)?.title ?? note.categoryId}
+                          </span>
+                          <h4 class="feature-side-title">{note.data.title}</h4>
+                          <time
+                            class="feature-side-date"
+                            datetime={note.data.date.toISOString()}
+                          >
+                            {formatDate(note.data.date)}
+                          </time>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )
+              }
+            </div>
+          )
+        }
+      </div>
+    </section>
+
+    {/* ===== 最新筆記：垂直條列 ===== */}
+    <section class="latest-section" aria-labelledby="latest-heading">
       <div class="bento-section-head">
         <div>
           <p class="section-label !mb-1">Recent</p>
           <h2 id="latest-heading" class="bento-section-title">最新筆記</h2>
         </div>
-        <span class="text-sm text-muted-foreground">
-          最近 {latestNotes.length} 篇
-        </span>
+        <span class="text-sm text-muted-foreground">最新 {latestNotes.length} 篇</span>
       </div>
 
       {
         latestNotes.length === 0 ? (
-          <p class="empty-state toon-card">
-            還沒有筆記。到{' '}
-            <code class="rounded-lg bg-muted px-1.5 py-0.5 text-sm">src/content/</code>{' '}
-            新增 .md 即可。
+          <p class="empty-state toon-card toon-card--static">
+            {allNotes.filter((n) => n.categoryId !== 'about').length === 0
+              ? '還沒有筆記。到 src/content/ 新增 .md 即可。'
+              : '其餘筆記都已出現在精選區。'}
           </p>
         ) : (
-          <ul class="bento-note-grid" role="list">
-            {latestNotes.map((note, i) => {
+          <ul class="news-list" role="list">
+            {latestNotes.map((note) => {
               const cat = getCategory(note.categoryId);
               return (
-                <li class:list={[i === 0 && 'bento-note-featured']}>
-                  <NotePreviewCard
-                    href={noteHref(note.categoryId, note.id)}
-                    title={note.data.title}
-                    description={note.data.description}
-                    dateLabel={formatDate(note.data.date)}
-                    dateIso={note.data.date.toISOString()}
-                    categoryLabel={cat?.title ?? note.categoryId}
-                    featured={i === 0}
-                  />
+                <li>
+                  <a href={noteHref(note.categoryId, note.id)} class="news-row">
+                    <div class="news-thumb" aria-hidden={note.image ? undefined : true}>
+                      {note.image ? (
+                        <img src={note.image} alt="" loading="lazy" decoding="async" />
+                      ) : (
+                        <span class="news-thumb-placeholder" />
+                      )}
+                    </div>
+                    <div class="news-body">
+                      <h3 class="news-title">{note.data.title}</h3>
+                      <div class="news-meta">
+                        <span class="news-cat">{cat?.title ?? note.categoryId}</span>
+                        <span class="news-dot" aria-hidden="true" />
+                        <time datetime={note.data.date.toISOString()}>
+                          {formatDate(note.data.date)}
+                        </time>
+                      </div>
+                    </div>
+                  </a>
                 </li>
               );
             })}

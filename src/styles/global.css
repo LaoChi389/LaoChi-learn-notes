@@ -1,6 +1,6 @@
 /**
  * 全站樣式
- * 色票：theme.css（Misty Lightseagreen，固定單一主題）
+ * 色票：theme.css（shadow-grey / gunmetal / bone / parchment）
  */
 @import 'tailwindcss';
 @import './theme.css';
@@ -16,6 +16,14 @@
   --color-border: var(--border);
   --color-surface: var(--surface);
   --color-surface-hover: var(--surface-hover);
+  --color-brown: var(--brown);
+  --color-brown-light: var(--brown-light);
+  --color-brown-dark: var(--brown-dark);
+  --color-bone: var(--bone);
+  --color-parchment: var(--parchment);
+  --color-gunmetal: var(--gunmetal);
+  --color-shadow-grey: var(--shadow-grey);
+  --color-taupe-grey: var(--taupe-grey);
   --font-sans: 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', ui-sans-serif, system-ui,
     sans-serif;
 }
@@ -29,7 +37,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
-    color-scheme: light;
+    color-scheme: dark;
   }
 
   body {
@@ -96,67 +104,268 @@
   @apply mx-auto w-full max-w-3xl px-4;
 }
 
-/* 頂欄 */
-.site-header-inner {
-  @apply rounded-[1.4rem] border-[2.5px] border-border bg-surface/90 px-3 py-3 backdrop-blur-sm sm:px-4;
-  box-shadow: 3px 4px 0 color-mix(in srgb, var(--accent) 14%, transparent);
+/*
+ * TechCrunch 風格頂部導覽
+ * 全寬深色橫列 + 漢堡抽屜（分類集中在 SiteNav / categories.ts）
+ */
+.tc-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.site-brand {
-  @apply flex min-w-0 items-center gap-2.5 no-underline sm:gap-3;
-  @apply transition-opacity duration-150 hover:opacity-90;
+.tc-bar {
+  background: color-mix(in srgb, var(--shadow-grey) 92%, #000 8%);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
-.site-logo {
-  @apply h-9 w-9 shrink-0 rounded-[0.85rem] object-cover sm:h-10 sm:w-10;
-  box-shadow: 2px 2px 0 color-mix(in srgb, var(--accent) 25%, transparent);
+.tc-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0.7rem 1rem;
+  min-height: 3.5rem;
 }
 
-.site-brand-text {
-  @apply truncate text-base font-bold tracking-tight text-foreground sm:text-lg;
-  transition: color 0.15s ease;
+.tc-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-shrink: 0;
+  max-width: 52%;
+  min-width: 0;
+  color: var(--parchment);
+  text-decoration: none;
 }
 
-.site-brand:hover .site-brand-text {
-  color: var(--accent);
+.tc-brand:hover {
+  color: var(--bone);
 }
 
-.site-brand-text.is-home {
-  color: var(--accent);
+.tc-brand-logo {
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  object-fit: contain;
+  border: 0;
+  border-radius: 0;
+  /* 黑底白線 Logo：在深色頂欄上融掉黑底，保留白色圖形 */
+  mix-blend-mode: screen;
 }
 
-.site-nav {
-  @apply flex flex-wrap items-center justify-end gap-1.5 sm:gap-2;
+@media (min-width: 640px) {
+  .tc-brand-logo {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
 }
 
-.site-nav-link {
-  @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold no-underline sm:px-3 sm:text-sm;
-  border: 2px solid transparent;
+.tc-brand-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.tc-nav-desktop {
+  display: none;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+@media (min-width: 900px) {
+  .tc-nav-desktop {
+    display: flex;
+  }
+
+  .tc-brand {
+    max-width: none;
+  }
+
+  .tc-brand-text {
+    font-size: 1.05rem;
+  }
+}
+
+.tc-nav-link {
+  padding: 0.45rem 0.7rem;
+  border-radius: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 600;
   color: var(--muted-foreground);
+  text-decoration: none;
+  white-space: nowrap;
   transition:
-    transform 0.15s ease,
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.tc-nav-link:hover {
+  color: var(--parchment);
+  background-color: color-mix(in srgb, var(--taupe-grey) 55%, transparent);
+}
+
+.tc-nav-link.is-active {
+  color: var(--shadow-grey);
+  background-color: var(--bone);
+}
+
+.tc-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.tc-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: transparent;
+  color: var(--parchment);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.tc-icon-btn:hover {
+  background-color: color-mix(in srgb, var(--taupe-grey) 60%, transparent);
+  color: var(--bone);
+}
+
+.tc-burger-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 1.15rem;
+}
+
+.tc-burger-lines span {
+  display: block;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+}
+
+.tc-burger-x {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* 漢堡抽屜 */
+.tc-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+}
+
+.tc-panel.is-open {
+  pointer-events: auto;
+}
+
+.tc-panel-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.tc-panel.is-open .tc-panel-backdrop {
+  opacity: 1;
+}
+
+.tc-panel-sheet {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(22rem, 92vw);
+  height: 100%;
+  overflow-y: auto;
+  padding: 4.5rem 1.15rem 2rem;
+  background: var(--shadow-grey);
+  border-left: 1px solid var(--border);
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.45);
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tc-panel.is-open .tc-panel-sheet {
+  transform: translateX(0);
+}
+
+.tc-panel-label {
+  margin: 0 0 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.tc-panel-label + .tc-panel-list + .tc-panel-label {
+  margin-top: 1.5rem;
+}
+
+.tc-panel-list {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.tc-panel-link {
+  display: block;
+  padding: 0.85rem 0.9rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--foreground);
+  text-decoration: none;
+  transition:
     border-color 0.15s ease,
-    background-color 0.15s ease,
-    color 0.15s ease;
+    background-color 0.15s ease;
 }
 
-.site-nav-link:hover {
-  transform: translateY(-1px);
-  border-color: var(--border);
-  background-color: var(--surface-hover);
-  color: var(--accent);
+.tc-panel-link:hover,
+.tc-panel-link.is-active {
+  border-color: color-mix(in srgb, var(--bone) 45%, var(--border));
+  background: var(--surface-hover);
 }
 
-.site-nav-link.is-active {
-  border-color: var(--accent);
-  background-color: color-mix(in srgb, var(--accent) 12%, white);
-  color: var(--accent-hover);
-  box-shadow: 2px 2px 0 color-mix(in srgb, var(--accent) 22%, transparent);
+.tc-panel-link-title {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.tc-panel-link-desc {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+  line-height: 1.35;
 }
 
 .site-footer-inner {
   @apply inline-block rounded-full border-2 border-border bg-surface px-4 py-1.5 font-medium;
-  box-shadow: 2px 2px 0 color-mix(in srgb, var(--accent) 12%, transparent);
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--brown) 35%, transparent);
 }
 
 @utility active-nav {
@@ -468,9 +677,9 @@
 
   .toon-badge {
     @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
-    background-color: color-mix(in srgb, var(--accent) 16%, var(--surface));
+    background-color: color-mix(in srgb, var(--accent) 22%, var(--surface));
     color: var(--accent-hover);
-    border: 1.5px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    border: 1.5px solid color-mix(in srgb, var(--accent) 40%, transparent);
   }
 
   .toon-btn {
@@ -496,9 +705,183 @@
     background-color: color-mix(in srgb, var(--surface) 70%, transparent);
   }
 
-  /* ===== 首頁 Bento ===== */
+  /* ===== 首頁 ===== */
+  .home-stack {
+    @apply flex flex-col gap-10 sm:gap-12;
+  }
+
   .bento {
     @apply flex flex-col gap-8 sm:gap-10;
+  }
+
+  /* 精選內容：整塊底色分區 */
+  .feature-section {
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding: 1.75rem 1rem 2rem;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--gunmetal) 88%, #000 12%) 0%,
+        color-mix(in srgb, var(--shadow-grey) 70%, var(--gunmetal) 30%) 100%
+      );
+    border-block: 1px solid var(--border);
+  }
+
+  .feature-section-inner {
+    @apply mx-auto w-full max-w-5xl;
+  }
+
+  .feature-empty {
+    @apply rounded-xl border border-dashed border-border px-4 py-8 text-sm text-muted-foreground;
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
+  }
+
+  /* 精選大版面 */
+  .feature-grid {
+    @apply grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-5;
+  }
+
+  .feature-hero {
+    @apply flex min-h-[14rem] flex-col justify-end p-6 no-underline sm:min-h-[16rem] sm:p-8;
+    background:
+      linear-gradient(
+        145deg,
+        color-mix(in srgb, var(--bone) 10%, var(--surface)) 0%,
+        var(--surface) 45%,
+        color-mix(in srgb, var(--taupe-grey) 55%, var(--surface)) 100%
+      );
+  }
+
+  .feature-hero-meta {
+    @apply mb-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground;
+  }
+
+  .feature-hero-title {
+    @apply text-2xl font-bold tracking-tight text-foreground sm:text-3xl;
+    transition: color 0.15s ease;
+  }
+
+  a.feature-hero:hover .feature-hero-title {
+    color: var(--accent-hover);
+  }
+
+  .feature-hero-desc {
+    @apply mt-3 max-w-prose text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem];
+  }
+
+  .feature-hero-cta {
+    @apply mt-5 text-sm font-bold text-accent;
+  }
+
+  .feature-side {
+    @apply flex flex-col gap-3;
+  }
+
+  .feature-side-card {
+    @apply block p-4 no-underline sm:p-5;
+  }
+
+  .feature-side-title {
+    @apply mt-2 text-base font-bold tracking-tight text-foreground;
+    transition: color 0.15s ease;
+  }
+
+  a.feature-side-card:hover .feature-side-title {
+    color: var(--accent-hover);
+  }
+
+  .feature-side-date {
+    @apply mt-2 block text-xs text-muted-foreground;
+  }
+
+  /* 最新筆記：新聞式垂直條列 */
+  .news-list {
+    @apply m-0 list-none divide-y divide-border overflow-hidden rounded-xl border border-border;
+    background: var(--surface);
+    padding: 0;
+  }
+
+  .news-row {
+    @apply flex items-stretch gap-3 px-3 py-3 no-underline sm:gap-4 sm:px-4 sm:py-3.5;
+    color: inherit;
+    transition: background-color 0.15s ease;
+  }
+
+  .news-row:hover {
+    background-color: var(--surface-hover);
+  }
+
+  .news-thumb {
+    @apply h-16 w-16 shrink-0 overflow-hidden rounded-lg sm:h-[4.5rem] sm:w-[4.5rem];
+    background: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .news-thumb img {
+    @apply h-full w-full object-cover;
+  }
+
+  .news-thumb-placeholder {
+    @apply block h-full w-full;
+    background:
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--taupe-grey) 70%, var(--surface)) 0%,
+        var(--muted) 100%
+      );
+  }
+
+  .news-body {
+    @apply flex min-w-0 flex-1 flex-col justify-center gap-1;
+  }
+
+  .news-title {
+    @apply m-0 text-[0.98rem] font-semibold leading-snug tracking-tight text-foreground sm:text-base;
+    transition: color 0.15s ease;
+  }
+
+  .news-row:hover .news-title {
+    color: var(--accent-hover);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .news-meta {
+    @apply flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted-foreground;
+  }
+
+  .news-cat {
+    @apply font-medium text-bone;
+  }
+
+  .news-dot {
+    @apply inline-block h-0.5 w-0.5 rounded-full bg-muted-foreground/60;
+  }
+
+  /* 關於本人單頁 */
+  .about-page {
+    @apply p-5 sm:p-8;
+  }
+
+  .about-page-header {
+    @apply mb-6 border-b border-border pb-5;
+  }
+
+  .about-page-title {
+    @apply text-2xl font-bold tracking-tight text-foreground sm:text-3xl;
+  }
+
+  .about-page-desc {
+    @apply mt-2 text-muted-foreground;
+  }
+
+  .about-page-date {
+    @apply mt-3 block text-xs text-muted-foreground;
+  }
+
+  .about-page-body {
+    @apply mt-2;
   }
 
   .bento-hero {
@@ -544,7 +927,7 @@
 
   .bento-cat-count {
     @apply mb-3 inline-flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold;
-    background-color: color-mix(in srgb, var(--cat-accent, var(--accent)) 18%, white);
+    background-color: color-mix(in srgb, var(--cat-accent, var(--accent)) 22%, var(--surface));
     color: var(--cat-accent, var(--accent));
     border: 2px solid color-mix(in srgb, var(--cat-accent, var(--accent)) 40%, transparent);
   }
@@ -675,7 +1058,7 @@
 
   .category-switcher-item.is-active {
     border-color: var(--accent);
-    background-color: color-mix(in srgb, var(--accent) 14%, white);
+    background-color: color-mix(in srgb, var(--accent) 20%, var(--surface));
     color: var(--accent-hover);
     box-shadow: 2px 2px 0 color-mix(in srgb, var(--accent) 30%, transparent);
   }

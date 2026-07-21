@@ -5,6 +5,8 @@ date: 2026-07-20
 tags:
   - 入門
   - 測試
+featured: true
+featuredOrder: 1
 ---
 
 這是 **AI工具與實作** 分類下的測試筆記，用來確認列表、內頁與排版是否正常。

@@ -1,10 +1,6 @@
 /**
- * 三大分類的共用設定
- * 顯示名稱集中在這裡；資料夾 / 網址仍用英文 id（方便維護）
- *
- * - ai         → AI工具與實作
- * - electrical → 電氣&電子設備
- * - system     → 系統&網路
+ * 網站分類設定（頂部導覽 / 列表 / 內容集合 id）
+ * 新增分類：在此加一筆，並建立 src/content/{id}/ 與 content.config.ts 集合
  */
 export const categories = [
   {
@@ -25,9 +21,15 @@ export const categories = [
     description: '系統管理、網路與安全相關筆記',
     href: '/system',
   },
+  {
+    id: 'about' as const,
+    title: '關於本人',
+    description: '自我介紹與聯絡方式',
+    href: '/about',
+  },
 ] as const;
 
-/** 分類 id 型別：'ai' | 'electrical' | 'system' */
+/** 分類 id 型別 */
 export type CategoryId = (typeof categories)[number]['id'];
 
 /** 依 id 取得分類資訊；找不到就回傳 undefined */

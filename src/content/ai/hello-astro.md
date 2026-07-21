@@ -5,6 +5,8 @@ date: 2026-07-19
 tags:
   - 入門
   - Astro
+featured: true
+featuredOrder: 2
 ---
 
 這是同一分類的第二篇測試筆記，日期比 TEST 早一天。

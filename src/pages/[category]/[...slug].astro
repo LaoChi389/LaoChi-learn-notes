@@ -23,6 +23,8 @@ export async function getStaticPaths() {
   const paths = [];
 
   for (const cat of categories) {
+    // 關於本人使用 /about 單頁，不產生日誌式子頁
+    if (cat.id === 'about') continue;
     const notes = await getCollection(cat.id, ({ data }) => !data.draft);
     for (const entry of notes) {
       paths.push({

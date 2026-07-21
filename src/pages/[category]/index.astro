@@ -9,9 +9,12 @@ import { categories, getCategory, type CategoryId } from '../../lib/categories';
 import { formatDate, noteHref } from '../../lib/notes';
 
 export async function getStaticPaths() {
-  return categories.map((cat) => ({
-    params: { category: cat.id },
-  }));
+  // 「關於本人」改由 /about 單頁呈現，不走分類列表
+  return categories
+    .filter((cat) => cat.id !== 'about')
+    .map((cat) => ({
+      params: { category: cat.id },
+    }));
 }
 
 const { category: categoryParam } = Astro.params;

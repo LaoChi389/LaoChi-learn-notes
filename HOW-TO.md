@@ -74,6 +74,8 @@ echo hello
 | `title` | 必填，列表與內頁標題 |
 | `date` | 必填，格式 `YYYY-MM-DD` |
 | `tags` | 可選；會出現在標籤頁與搜尋 |
+| `featured: true` | 出現在首頁精選區 |
+| `featuredOrder` | 精選排序，數字越小越前面 |
 | `draft: true` | 草稿，不會出現在列表／搜尋 |
 | 刪除筆記 | 直接刪掉對應 `.md` 即可 |
 

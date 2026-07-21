@@ -1,20 +1,12 @@
 ---
 /**
  * 全站共用版面
- * 網站名稱：紀錄學習的老紀
- * 固定單一配色（無日間／夜間切換）
+ * - TechCrunch 風格頂部導覽（SiteNav）
+ * - 分類來源：lib/categories.ts（新增分類改那裡即可）
  */
 import '../styles/global.css';
-import CategoryPieMenu from '../components/CategoryPieMenu.svelte';
+import SiteNav from '../components/SiteNav.svelte';
 import { categories } from '../lib/categories';
-
-/** 圓餅選單用的精簡分類（短標方便圓鈕顯示） */
-const pieItems = categories.map((c) => ({
-  id: c.id,
-  title: c.title,
-  href: c.href,
-  short: c.id === 'ai' ? 'AI' : c.id === 'electrical' ? '電' : '網',
-}));
 
 interface Props {
   title: string;
@@ -29,18 +21,14 @@ const defaultDescription =
 
 const { title, description = defaultDescription, wide = false } = Astro.props;
 const pageTitle = title === '首頁' ? siteName : `${title} · ${siteName}`;
+const pathname = Astro.url.pathname;
 
-const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
-
-function isActive(href: string) {
-  if (href === '/') return pathname === '/';
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
-
-const extraNav = [
-  { href: '/tags', title: '標籤' },
-  { href: '/search', title: '搜尋' },
-];
+/** 導覽列項目：集中從 categories 產出，之後加分類自動出現 */
+const navItems = categories.map((c) => ({
+  title: c.title,
+  href: c.href,
+  description: c.description,
+}));
 ---
 
 <!doctype html>
@@ -50,7 +38,7 @@ const extraNav = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="dark" />
     <link rel="icon" type="image/png" href="/favicon-v2.png" />
     <link rel="apple-touch-icon" href="/favicon-v2.png" />
     <title>{pageTitle}</title>
@@ -65,64 +53,18 @@ const extraNav = [
       跳到主要內容
     </a>
 
-    <header class="site-header">
-      <div
-        class:list={[
-          'site-header-inner mx-auto flex w-full items-center justify-between gap-4 px-4 py-4 sm:py-5',
-          wide ? 'max-w-5xl' : 'max-w-3xl',
-        ]}
-      >
-        <a href="/" class="site-brand" aria-label={`${siteName}（回首頁）`}>
-          <img
-            src="/logo.png"
-            alt=""
-            width="40"
-            height="40"
-            class="site-logo"
-            decoding="async"
-          />
-          <span
-            class:list={[
-              'site-brand-text',
-              isActive('/') && pathname === '/' && 'is-home',
-            ]}
-          >
-            {siteName}
-          </span>
-        </a>
-
-        <nav class="site-nav" aria-label="主要導覽">
-          {
-            categories.map((cat) => (
-              <a
-                href={cat.href}
-                class:list={[
-                  'site-nav-link hidden sm:inline-flex',
-                  isActive(cat.href) && 'is-active',
-                ]}
-              >
-                {cat.title}
-              </a>
-            ))
-          }
-          {
-            extraNav.map((item) => (
-              <a
-                href={item.href}
-                class:list={['site-nav-link', isActive(item.href) && 'is-active']}
-              >
-                {item.title}
-              </a>
-            ))
-          }
-        </nav>
-      </div>
-    </header>
+    <SiteNav
+      client:load
+      siteName={siteName}
+      logoSrc="/logo.png"
+      items={navItems}
+      currentPath={pathname}
+    />
 
     <main
       id="main-content"
       class:list={[
-        'mx-auto w-full flex-1 px-4 pb-12 pt-2 sm:pb-16',
+        'mx-auto w-full flex-1 px-4 pb-12 pt-6 sm:pb-16 sm:pt-8',
         wide ? 'max-w-5xl' : 'max-w-3xl',
       ]}
     >
@@ -137,8 +79,5 @@ const extraNav = [
     >
       <p class="site-footer-inner">{siteName}</p>
     </footer>
-
-    {/* 右下角固定：三大分類圓餅選單（Svelte） */}
-    <CategoryPieMenu client:load items={pieItems} />
   </body>
 </html>

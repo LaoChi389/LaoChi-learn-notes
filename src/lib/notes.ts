@@ -9,7 +9,10 @@ import { categories, type CategoryId } from './categories';
 export type NoteEntry =
   | CollectionEntry<'ai'>
   | CollectionEntry<'electrical'>
-  | CollectionEntry<'system'>;
+  | CollectionEntry<'system'>
+  | CollectionEntry<'about'>;
+
+export type NoteWithCategory = NoteEntry & { categoryId: CategoryId };
 
 /** 搜尋索引用的精簡資料（給瀏覽器端過濾） */
 export type SearchItem = {
@@ -31,11 +34,9 @@ export async function getNotes(categoryId: CategoryId): Promise<NoteEntry[]> {
   ) as NoteEntry[];
 }
 
-/** 取得全部已發佈筆記（三大分類合併），依日期由新到舊 */
-export async function getAllNotes(): Promise<
-  Array<NoteEntry & { categoryId: CategoryId }>
-> {
-  const results: Array<NoteEntry & { categoryId: CategoryId }> = [];
+/** 取得全部已發佈筆記（各分類合併），依日期由新到舊 */
+export async function getAllNotes(): Promise<NoteWithCategory[]> {
+  const results: NoteWithCategory[] = [];
 
   for (const cat of categories) {
     const notes = await getNotes(cat.id);
@@ -45,6 +46,35 @@ export async function getAllNotes(): Promise<
   }
 
   return results.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+}
+
+/**
+ * 首頁精選筆記
+ * 條件：featured: true（且非 draft）
+ * 排序：featuredOrder 小到大，再比日期新到舊
+ */
+export async function getFeaturedNotes(): Promise<NoteWithCategory[]> {
+  const notes = await getAllNotes();
+  return notes
+    .filter((n) => n.data.featured && n.categoryId !== 'about')
+    .sort((a, b) => {
+      const ao = a.data.featuredOrder ?? 100;
+      const bo = b.data.featuredOrder ?? 100;
+      if (ao !== bo) return ao - bo;
+      return b.data.date.valueOf() - a.data.date.valueOf();
+    });
+}
+
+/**
+ * 從 Markdown 正文取出第一張圖片網址
+ * 支援 ![alt](url) 與 <img src="url">
+ */
+export function extractFirstImage(body: string | undefined): string | undefined {
+  if (!body) return undefined;
+  const md = body.match(/!\[[^\]]*]\(([^)\s]+)(?:\s+"[^"]*")?\)/);
+  if (md?.[1]) return md[1];
+  const html = body.match(/<img[^>]+src=["']([^"']+)["']/i);
+  return html?.[1];
 }
 
 /** 把 Date 格式化成 AstroPaper 風格，例如 20 Jul, 2026 */
