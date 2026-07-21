@@ -9,7 +9,10 @@ const searchIndex = await buildSearchIndex();
 const totalCount = searchIndex.length;
 ---
 
-<BaseLayout title="搜尋" description="搜尋全部學習筆記">
+<BaseLayout
+  title="搜尋"
+  description="搜尋紀錄學習的老紀全部筆記：依標題、說明與標籤快速找到內容。"
+>
   <nav class="breadcrumb" aria-label="麵包屑">
     <a href="/">首頁</a>
     <span class="mx-2 opacity-50">/</span>

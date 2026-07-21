@@ -1,0 +1,6 @@
+# 搜尋引擎爬蟲規則
+User-agent: *
+Allow: /
+
+# Sitemap 位置（需與 astro.config.mjs 的 site 一致）
+Sitemap: https://laochi389.github.io/sitemap-index.xml

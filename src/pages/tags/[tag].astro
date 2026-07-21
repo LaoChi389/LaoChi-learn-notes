@@ -19,7 +19,10 @@ const tag = decodeURIComponent(rawTag);
 const notes = await getNotesByTag(tag);
 ---
 
-<BaseLayout title={`#${tag}`} description={`標籤「${tag}」的筆記列表`}>
+<BaseLayout
+  title={`#${tag}`}
+  description={`標籤「${tag}」的學習筆記列表 — 紀錄學習的老紀。`}
+>
   <nav class="breadcrumb" aria-label="麵包屑">
     <a href="/">首頁</a>
     <span class="mx-2 opacity-50">/</span>

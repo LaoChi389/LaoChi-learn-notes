@@ -8,7 +8,10 @@ import { getAllTags, tagHref } from '../../lib/notes';
 const tags = await getAllTags();
 ---
 
-<BaseLayout title="標籤" description="依標籤瀏覽全部學習筆記">
+<BaseLayout
+  title="標籤"
+  description="依標籤瀏覽紀錄學習的老紀的全部筆記，快速篩選主題。"
+>
   <nav class="breadcrumb" aria-label="麵包屑">
     <a href="/">首頁</a>
     <span class="mx-2 opacity-50">/</span>

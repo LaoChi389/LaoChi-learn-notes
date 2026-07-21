@@ -37,7 +37,12 @@ const hero = featuredNotes[0];
 const moreFeatured = featuredNotes.slice(1);
 ---
 
-<BaseLayout title="首頁" wide>
+<BaseLayout
+  title="首頁"
+  isHome
+  wide
+  description="紀錄學習的老紀：AI 工具與實作、電氣與電子設備、系統與網路的學習筆記與精選內容。"
+>
   <div class="home-stack">
     {/* ===== 精選內容（有底色分塊） ===== */}
     <section class="feature-section" aria-labelledby="featured-heading">

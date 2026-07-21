@@ -21,7 +21,10 @@ const { Content } = await render(entry);
 
 <BaseLayout
   title="關於本人"
-  description={entry.data.description ?? '自我介紹與聯絡方式'}
+  description={
+    entry.data.description ??
+    '關於老紀：自我介紹與聯絡方式。原系統工程師，現 MEP 工程師的學習筆記站。'
+  }
 >
   <nav class="breadcrumb" aria-label="麵包屑">
     <a href="/">首頁</a>

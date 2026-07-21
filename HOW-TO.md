@@ -71,8 +71,9 @@ echo hello
 | 項目 | 說明 |
 |------|------|
 | 檔名 | 會變成網址，例如 `my-note.md` → `/ai/my-note` |
-| `title` | 必填，列表與內頁標題 |
+| `title` | 必填，列表與內頁標題（也會進 SEO title） |
 | `date` | 必填，格式 `YYYY-MM-DD` |
+| 內文標題 | 正文請用 `##`、`###`，不要用單一 `#`（頁面已有 h1） |
 | `tags` | 可選；會出現在標籤頁與搜尋 |
 | `featured: true` | 出現在首頁精選區 |
 | `featuredOrder` | 精選排序，數字越小越前面 |

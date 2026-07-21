@@ -32,7 +32,10 @@ const notes = (await getCollection(categoryId, ({ data }) => !data.draft)).sort(
 const latestDate = notes[0] ? formatDate(notes[0].data.date) : null;
 ---
 
-<BaseLayout title={category.title} description={category.description}>
+<BaseLayout
+  title={category.title}
+  description={`${category.title}相關學習筆記。${category.description}`}
+>
   <nav class="breadcrumb" aria-label="麵包屑">
     <a href="/">首頁</a>
     <span class="mx-2 opacity-50">/</span>
