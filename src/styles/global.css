@@ -1,6 +1,6 @@
 /**
  * 全站樣式
- * 色票：theme.css（shadow-grey / gunmetal / bone / parchment）
+ * 色票：theme.css（mint-cream / strong-cyan / jet-black）
  */
 @import 'tailwindcss';
 @import './theme.css';
@@ -24,6 +24,11 @@
   --color-gunmetal: var(--gunmetal);
   --color-shadow-grey: var(--shadow-grey);
   --color-taupe-grey: var(--taupe-grey);
+  --color-jet-black: var(--jet-black);
+  --color-strong-cyan: var(--strong-cyan);
+  --color-mint-cream: var(--mint-cream);
+  --color-grapefruit-pink: var(--grapefruit-pink);
+  --color-royal-gold: var(--royal-gold);
   --font-sans: 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', ui-sans-serif, system-ui,
     sans-serif;
 }
@@ -37,7 +42,6 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
-    color-scheme: dark;
   }
 
   body {
@@ -152,7 +156,7 @@
   object-fit: contain;
   border: 0;
   border-radius: 0;
-  /* 黑底白線 Logo：在深色頂欄上融掉黑底，保留白色圖形 */
+  /* 黑底白線 Logo：在深綠頂欄上融掉黑底 */
   mix-blend-mode: screen;
 }
 
@@ -243,6 +247,11 @@
 .tc-icon-btn:hover {
   background-color: color-mix(in srgb, var(--taupe-grey) 60%, transparent);
   color: var(--bone);
+}
+
+.tc-theme-icon {
+  font-size: 1.1rem;
+  line-height: 1;
 }
 
 .tc-burger-lines {
@@ -411,7 +420,7 @@
   height: 3rem;
   object-fit: contain;
   border: 0;
-  /* 黑底白線 Logo 融進暗色頁尾 */
+  /* 黑底白線 Logo 融進深綠頁尾 */
   mix-blend-mode: screen;
 }
 

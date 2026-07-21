@@ -66,7 +66,26 @@ const navItems = getHeaderCategories().map((c) => ({
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="light dark" />
+
+    {/* 主題：避免閃爍，優先 localStorage，再系統偏好 */}
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var theme =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : prefersDark
+                ? 'dark'
+                : 'light';
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
 
     {/* 基本 SEO */}
     <title>{pageTitle}</title>

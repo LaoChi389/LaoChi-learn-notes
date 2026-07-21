@@ -23,6 +23,8 @@
   let { siteName, items, currentPath = '/', logoSrc = '/logo.png' }: Props = $props();
 
   let menuOpen = $state(false);
+  /** 目前主題：light = 日光，dark = 夜光 */
+  let theme = $state<'light' | 'dark'>('light');
 
   function normalize(path: string) {
     return path.replace(/\/$/, '') || '/';
@@ -43,14 +45,36 @@
     menuOpen = false;
   }
 
+  function applyTheme(next: 'light' | 'dark') {
+    theme = next;
+    document.documentElement.setAttribute('data-theme', next);
+    try {
+      localStorage.setItem('theme', next);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function toggleTheme() {
+    applyTheme(theme === 'light' ? 'dark' : 'light');
+  }
+
   function onKeydown(e: KeyboardEvent) {
     if (e.key === 'Escape') menuOpen = false;
   }
 
   $effect(() => {
+    const attr = document.documentElement.getAttribute('data-theme');
+    if (attr === 'dark' || attr === 'light') {
+      theme = attr;
+    } else {
+      theme = 'light';
+    }
+  });
+
+  $effect(() => {
     if (!menuOpen) return;
     document.addEventListener('keydown', onKeydown);
-    // 開選單時鎖一下捲動，行動版較好操作
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
@@ -95,6 +119,21 @@
             <path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
           </svg>
         </a>
+
+        <!-- 日光顯示月亮；夜光顯示太陽 -->
+        <button
+          type="button"
+          class="tc-icon-btn tc-theme-btn"
+          aria-label={theme === 'light' ? '切換為夜光模式' : '切換為日光模式'}
+          title={theme === 'light' ? '夜光模式' : '日光模式'}
+          onclick={toggleTheme}
+        >
+          {#if theme === 'light'}
+            <span class="tc-theme-icon" aria-hidden="true">🌙</span>
+          {:else}
+            <span class="tc-theme-icon" aria-hidden="true">☀️</span>
+          {/if}
+        </button>
 
         <button
           type="button"

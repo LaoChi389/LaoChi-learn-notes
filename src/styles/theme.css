@@ -1,72 +1,136 @@
 /**
- * 全站色票（Coolors 系：gunmetal / shadow-grey / bone / taupe / parchment）
- * 固定單一主題；改顏色優先改本檔
+ * 全站色票 + 日／夜模式
+ * 改顏色優先改本檔
  *
  * 來源色：
- * - shadow-grey  #2D232E  最深
- * - gunmetal     #474448  深灰紫
- * - taupe-grey   #534B52  中灰紫
- * - bone         #E0DDCF  骨色
- * - parchment    #F1F0EA  羊皮紙白
+ * - jet-black #292F36
+ * - strong-cyan #4ECDC4
+ * - mint-cream #F7FFF7
+ * - grapefruit-pink #FF6B6B
+ * - royal-gold #FFE66D
  */
 
 :root {
   /* ===== 命名色票 ===== */
-  --shadow-grey: #2d232e;
-  --gunmetal: #474448;
-  --taupe-grey: #534b52;
-  --bone: #e0ddcf;
-  --parchment: #f1f0ea;
+  --jet-black: #292f36;
+  --strong-cyan: #4ecdc4;
+  --mint-cream: #f7fff7;
+  --grapefruit-pink: #ff6b6b;
+  --royal-gold: #ffe66d;
 
-  /* ===== 語意色（全站元件使用） ===== */
+  /* 較淺的青（強調用，比 deep mix 更易讀） */
+  --cyan-bright: #5ed9d0;
+  --cyan-mid: #3dbdb5;
+}
 
-  /* 背景 */
-  --background: var(--shadow-grey);
-  --surface: var(--gunmetal);
-  --surface-hover: var(--taupe-grey);
-  --surface-pop: color-mix(in srgb, var(--taupe-grey) 78%, var(--bone) 22%);
+/* ===== 日光模式（預設） ===== */
+:root,
+[data-theme='light'] {
+  --background: #f4fbf8;
+  --surface: #ffffff;
+  --surface-hover: #e8f7f4;
+  --surface-pop: #fffef5;
 
-  /* 文字 */
-  --foreground: var(--parchment);
-  --muted: color-mix(in srgb, var(--gunmetal) 55%, var(--shadow-grey) 45%);
-  --muted-foreground: color-mix(in srgb, var(--bone) 72%, var(--taupe-grey) 28%);
+  /* 正文加深，不要混太多綠 */
+  --foreground: #1c2329;
+  --muted: #e5f3f0;
+  --muted-foreground: #4a5560;
 
-  /* 主強調：骨色／羊皮紙（暗底上清楚又溫暖） */
-  --accent: var(--bone);
-  --accent-hover: var(--parchment);
-  --accent-soft: color-mix(in srgb, var(--bone) 55%, var(--taupe-grey) 45%);
-  --accent-foreground: var(--shadow-grey);
+  /* 強調：中等青，hover 稍深但仍清楚 */
+  --accent: #2eb8ae;
+  --accent-hover: #1f8f87;
+  --accent-soft: #c5efe9;
+  --accent-foreground: #ffffff;
 
-  /* 輔助（相容舊的 brown 變數名） */
-  --brown: var(--taupe-grey);
-  --brown-light: var(--bone);
-  --brown-dark: var(--shadow-grey);
+  --highlight: var(--grapefruit-pink);
+  --highlight-soft: #ffe0e0;
+  --gold: var(--royal-gold);
 
-  /* 邊框 */
-  --border: color-mix(in srgb, var(--taupe-grey) 75%, var(--bone) 25%);
-  --border-hover: var(--bone);
-  --border-soft: var(--taupe-grey);
+  --brown: #5a656c;
+  --brown-light: #d4e8e4;
+  --brown-dark: var(--jet-black);
 
-  /* 圓角（俏皮） */
+  --border: #c5ddd8;
+  --border-hover: #2eb8ae;
+  --border-soft: #dceeea;
+
   --radius: 16px;
   --radius-blob: 1.15rem 1.35rem 1.2rem 1.3rem / 1.3rem 1.1rem 1.35rem 1.2rem;
   --radius-blob-sm: 0.95rem 1.1rem 1rem 1.05rem / 1.05rem 0.9rem 1.1rem 1rem;
   --radius-pill: 999px;
 
-  /* 陰影 */
-  --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-color: rgba(0, 0, 0, 0.4);
-  --shadow-pop: color-mix(in srgb, var(--bone) 18%, transparent);
+  --shadow: 0 8px 24px rgba(28, 35, 41, 0.08);
+  --shadow-color: rgba(28, 35, 41, 0.08);
+  --shadow-pop: rgba(46, 184, 174, 0.2);
 
-  /* 背景紋理 */
   --bg-grid-opacity: 0.035;
-  --bg-glow-opacity: 0.16;
+  --bg-glow-opacity: 0.22;
 
-  /* 可選漸層（若之後要裝飾用） */
-  --gradient-top: linear-gradient(0deg, var(--gunmetal), var(--shadow-grey));
+  /* 頂欄：深底 + 亮字 */
+  --shadow-grey: #292f36;
+  --gunmetal: #343b44;
+  --taupe-grey: #3dbdb5;
+  --bone: #5ed9d0;
+  --parchment: #f7fff7;
+
+  --gradient-top: linear-gradient(180deg, #f4fbf8, #e8f7f4);
   --gradient-radial: radial-gradient(
     ellipse at 50% 0%,
-    color-mix(in srgb, var(--taupe-grey) 55%, transparent),
+    rgba(46, 184, 174, 0.2),
     transparent 70%
   );
+
+  color-scheme: light;
+}
+
+/* ===== 夜光模式 ===== */
+[data-theme='dark'] {
+  --background: #1a1e23;
+  --surface: #252b32;
+  --surface-hover: #2f363f;
+  --surface-pop: #333b45;
+
+  --foreground: #f2f7f5;
+  --muted: #2a3138;
+  --muted-foreground: #a8b4bc;
+
+  /* 夜光用較亮的青，字才清楚 */
+  --accent: #5ed9d0;
+  --accent-hover: #7ee5de;
+  --accent-soft: #2a4544;
+  --accent-foreground: #1a1e23;
+
+  --highlight: #ff8a8a;
+  --highlight-soft: #4a3030;
+  --gold: #ffe66d;
+
+  --brown: #8a959c;
+  --brown-light: #3d4a50;
+  --brown-dark: #12151a;
+
+  --border: #3d474f;
+  --border-hover: #5ed9d0;
+  --border-soft: #323940;
+
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-color: rgba(0, 0, 0, 0.35);
+  --shadow-pop: rgba(94, 217, 208, 0.18);
+
+  --bg-grid-opacity: 0.04;
+  --bg-glow-opacity: 0.18;
+
+  --shadow-grey: #12151a;
+  --gunmetal: #1e242b;
+  --taupe-grey: #4ecdc4;
+  --bone: #5ed9d0;
+  --parchment: #f2f7f5;
+
+  --gradient-top: linear-gradient(180deg, #1a1e23, #1e242b);
+  --gradient-radial: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(78, 205, 196, 0.15),
+    transparent 70%
+  );
+
+  color-scheme: dark;
 }
