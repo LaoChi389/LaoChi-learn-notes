@@ -1,17 +1,17 @@
 ---
 /**
  * 全站共用版面
- * - TechCrunch 風格頂部導覽（SiteNav）
- * - 分類來源：lib/categories.ts（新增分類改那裡即可）
+ * - 頂部：TechCrunch 風格導覽（不含關於本人）
+ * - 頁尾：Logo + 導覽連結（含關於本人）
  */
 import '../styles/global.css';
 import SiteNav from '../components/SiteNav.svelte';
-import { categories } from '../lib/categories';
+import SiteFooter from '../components/SiteFooter.astro';
+import { getHeaderCategories } from '../lib/categories';
 
 interface Props {
   title: string;
   description?: string;
-  /** 首頁等需要較寬版面時開啟 */
   wide?: boolean;
 }
 
@@ -23,8 +23,8 @@ const { title, description = defaultDescription, wide = false } = Astro.props;
 const pageTitle = title === '首頁' ? siteName : `${title} · ${siteName}`;
 const pathname = Astro.url.pathname;
 
-/** 導覽列項目：集中從 categories 產出，之後加分類自動出現 */
-const navItems = categories.map((c) => ({
+/** 頂部導覽：只含 inHeader 的分類 */
+const navItems = getHeaderCategories().map((c) => ({
   title: c.title,
   href: c.href,
   description: c.description,
@@ -71,13 +71,6 @@ const navItems = categories.map((c) => ({
       <slot />
     </main>
 
-    <footer
-      class:list={[
-        'site-footer mx-auto w-full px-4 py-6 text-center text-sm text-muted-foreground',
-        wide ? 'max-w-5xl' : 'max-w-3xl',
-      ]}
-    >
-      <p class="site-footer-inner">{siteName}</p>
-    </footer>
+    <SiteFooter logoSrc="/logo.png" />
   </body>
 </html>

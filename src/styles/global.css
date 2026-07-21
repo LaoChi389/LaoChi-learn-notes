@@ -363,9 +363,108 @@
   line-height: 1.35;
 }
 
+/*
+ * 全站頁尾（Gizmodo 式清楚分層，暗色配色）
+ */
+.site-footer {
+  margin-top: auto;
+  background: color-mix(in srgb, var(--shadow-grey) 88%, #000 12%);
+  border-top: 1px solid var(--border);
+}
+
 .site-footer-inner {
-  @apply inline-block rounded-full border-2 border-border bg-surface px-4 py-1.5 font-medium;
-  box-shadow: 2px 2px 0 color-mix(in srgb, var(--brown) 35%, transparent);
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .site-footer-inner {
+    padding: 2.5rem 1.25rem 1.75rem;
+  }
+}
+
+.site-footer-top {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .site-footer-top {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+}
+
+.site-footer-brand {
+  display: inline-flex;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.site-footer-logo {
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+  border: 0;
+  /* 黑底白線 Logo 融進暗色頁尾 */
+  mix-blend-mode: screen;
+}
+
+@media (min-width: 640px) {
+  .site-footer-logo {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+}
+
+.site-footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.15rem;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .site-footer-nav {
+    justify-content: flex-end;
+  }
+}
+
+.site-footer-link {
+  padding: 0.4rem 0.7rem;
+  border-radius: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.site-footer-link:hover {
+  color: var(--parchment);
+  background-color: color-mix(in srgb, var(--taupe-grey) 50%, transparent);
+}
+
+.site-footer-bottom {
+  margin-top: 1.75rem;
+  padding-top: 1.15rem;
+  border-top: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  text-align: left;
+}
+
+.site-footer-copy {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  letter-spacing: 0.02em;
+  line-height: 1.5;
 }
 
 @utility active-nav {
